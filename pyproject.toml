@@ -7,7 +7,9 @@ authors = [
     { name = "ya2n-bt", email = "yann.brochet@etu.univ-tours.fr" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "playwright>=1.55.0",
+]
 
 [project.scripts]
 projet-scrap = "projet_scrap:main"
