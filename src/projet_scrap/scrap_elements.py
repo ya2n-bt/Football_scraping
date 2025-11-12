@@ -31,3 +31,12 @@ class ScrapElements:
             return float(taille_joueur_filtre)
         else:
             return "Taille non trouvé"
+        
+    @staticmethod
+    def scrap_position(page: Page) -> str:
+        page.wait_for_selector("li.data-header__label:has-text('Position:') > span.data-header__content", timeout=5000)
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        if position_joueur is not None:
+            return position_joueur
+        else:
+            return "Position non trouvé"

@@ -21,7 +21,8 @@ def run(playwright):
     data: dict = {
         "Nom": s.scrap_nom(page),
         "Âge": s.scrap_age(page),
-        "Taille": s.scrap_taille(page) 
+        "Taille": s.scrap_taille(page) ,
+        "Position": s.scrap_position(page)
         }
     browser.close()
     return data
