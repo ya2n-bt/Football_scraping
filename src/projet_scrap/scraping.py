@@ -19,8 +19,9 @@ def run(playwright):
     )
     page.goto(URL, wait_until="load")
     data: dict = {
-        "Nom" : s.scrap_nom(page),
-        "Âge" : s.scrap_age(page)
+        "Nom": s.scrap_nom(page),
+        "Âge": s.scrap_age(page),
+        "Taille": s.scrap_taille(page) 
         }
     browser.close()
     return data

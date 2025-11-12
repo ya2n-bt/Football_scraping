@@ -18,6 +18,16 @@ class ScrapElements:
         age_joueur = page.locator("span[itemprop='birthDate'].data-header__content").inner_text().strip()
         age_joueur_filtre = re.search(r'\((.*?)\)', age_joueur)
         if age_joueur_filtre is not None:
-            return age_joueur_filtre.group(1).strip()
+            return int(age_joueur_filtre.group(1).strip())
         else:
             return "Âge non trouvé"
+        
+    @staticmethod
+    def scrap_taille(page: Page) -> float:
+        page.wait_for_selector("span[itemprop='height'].data-header__content", timeout=5000)
+        taille_joueur = page.locator("span[itemprop='height'].data-header__content").inner_text().strip()
+        taille_joueur_filtre = taille_joueur.replace(' m', '').replace(',', '.').strip()
+        if taille_joueur_filtre is not None:
+            return float(taille_joueur_filtre)
+        else:
+            return "Taille non trouvé"
