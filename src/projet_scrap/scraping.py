@@ -1,5 +1,5 @@
 from playwright.sync_api import sync_playwright
-from scrap_elements import scrap_nom
+from scrap_elements import ScrapElements as s
 import re 
 import json
 
@@ -18,12 +18,16 @@ def run(playwright):
         lambda route: route.abort()
     )
     page.goto(URL, wait_until="load")
-    data = scrap_nom(page)
+    data: dict = {
+        "Nom" : s.scrap_nom(page),
+        "Âge" : s.scrap_age(page)
+        }
     browser.close()
     return data
 
 with sync_playwright() as playwright:
     data = run(playwright)
+
 
 output_file = "output.json"
 with open(output_file, "w", encoding="utf-8") as f:
