@@ -40,3 +40,22 @@ class ScrapElements:
             return position_joueur
         else:
             return "Position non trouvé"
+    
+    @staticmethod
+    def scrap_valeur(page: Page) -> float:
+        page.wait_for_selector("a.data-header__market-value-wrapper", timeout=5000)
+        valeur_brute = page.locator("a.data-header__market-value-wrapper").inner_text().split()[0].strip()
+        valeur_brute = valeur_brute.replace(',', '.') 
+        unite = page.locator("a.data-header__market-value-wrapper span.waehrung").inner_text().strip()
+        if "mio. €" in unite:
+            multiplicateur = 1_000_000
+        elif "K €" in unite:
+            multiplicateur = 1_000
+        else:
+            multiplicateur = 1 
+        valeur = float(valeur_brute) * multiplicateur
+
+        try:
+            return valeur
+        except ValueError:
+            return "Valeur non trouvée" 
