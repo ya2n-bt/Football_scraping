@@ -59,3 +59,23 @@ class ScrapElements:
             return valeur
         except ValueError:
             return "Valeur non trouvée" 
+        
+    @staticmethod
+    def scrap_nombre_matchs_24_25(page: Page) -> int:
+        selector = "tr:has(td.zentriert:has-text('24/25'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_matchs = 0 
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator("td:nth-of-type(6)")
+            if cellules.count() > 0: 
+                try:
+                    nombre_matchs = int(cellules.first.inner_text().strip())
+                    total_matchs += nombre_matchs
+                except ValueError:
+                    continue 
+        
+        return total_matchs
+    
