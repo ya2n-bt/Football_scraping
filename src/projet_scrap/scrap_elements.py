@@ -88,3 +88,41 @@ class ScrapElements:
         
         return total_matchs
     
+    @staticmethod
+    def scrap_nombre_buts_24_25(page: Page) -> int:
+        selector = "tr:has(td.zentriert:has-text('24/25'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_buts = 0 
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator("td:nth-of-type(8)")
+            if cellules.count() > 0: 
+                try:
+                    nombre_buts = int(cellules.first.inner_text().strip())
+                    total_buts += nombre_buts
+                except ValueError:
+                    continue 
+        
+        return total_buts
+    
+    @staticmethod
+    def scrap_nombre_passes_d_24_25(page: Page) -> int:
+        selector = "tr:has(td.zentriert:has-text('24/25'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_passes_d = 0 
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator("td:nth-of-type(9)")
+            if cellules.count() > 0: 
+                try:
+                    nombre_passes_d = int(cellules.first.inner_text().strip())
+                    total_passes_d += nombre_passes_d
+                except ValueError:
+                    continue 
+        
+        return total_passes_d
+    
