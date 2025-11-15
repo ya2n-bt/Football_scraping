@@ -150,10 +150,11 @@ class ScrapElements:
         return total_passes_d
     
     @staticmethod
-    def scrap_nombre_penaltys_buts_encaisses_24_25(page: Page) -> int:
+    def scrap_nombre_penaltys_24_25(page: Page) -> int:
         position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
-        if position_joueur != "Gardien de but":
-
+        if position_joueur == "Gardien de but":
+            return 0
+        else: 
             selector = "tr:has(td.zentriert:has-text('24/25'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
@@ -169,11 +170,14 @@ class ScrapElements:
                     except ValueError:
                         continue 
             
-            return {"Nombre de penaltys 24/25": total_penalty,
-                    "Nombre de buts encaissés 24/25": 0}
-
-        else:
-
+            return total_penalty
+        
+    @staticmethod
+    def scrap_nombre_buts_encaisses_24_25(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        if position_joueur != "Gardien de but":
+            return 0
+        else: 
             selector = "tr:has(td.zentriert:has-text('24/25'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
@@ -189,8 +193,8 @@ class ScrapElements:
                     except ValueError:
                         continue 
             
-            return {"Nombre de penaltys 24/25": 0,
-                    "Nombre de buts encaissés 24/25": total_buts_encaisses}
+            return total_buts_encaisses
+
         
     @staticmethod
     def scrap_nombre_clean_sheets_24_25(page: Page) -> int:
