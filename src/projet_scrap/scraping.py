@@ -25,9 +25,11 @@ def run(playwright):
         "Taille": s.scrap_taille(page) ,
         "Position": s.scrap_position(page),
         "Valeur": s.scrap_valeur(page),
+        "Minutes jouées 24/25": s.scrap_minutes_jouees_24_25(page),
         "Nombre de matchs 24/25": s.scrap_nombre_matchs_24_25(page),
         "Nombre de buts 24/25": s.scrap_nombre_buts_24_25(page),
         "Nombre de passes décisives 24/25": s.scrap_nombre_passes_d_24_25(page),
+        "Nombre clean de sheets 24/25": s.scrap_nombre_clean_sheets_24_25(page),
         }
     
     penaltys_ou_buts_encaisses_24_25 = s.scrap_nombre_penaltys_buts_encaisses_24_25(page)

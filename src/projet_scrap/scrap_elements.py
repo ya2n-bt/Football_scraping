@@ -191,3 +191,75 @@ class ScrapElements:
             
             return {"Nombre de penaltys 24/25": 0,
                     "Nombre de buts encaissés 24/25": total_buts_encaisses}
+        
+    @staticmethod
+    def scrap_nombre_clean_sheets_24_25(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        if position_joueur == "Gardien de but":
+
+            selector = "tr:has(td.zentriert:has-text('24/25'))"
+            lignes = page.locator(selector)
+            if lignes.count() == 0:
+                return 0  
+            
+            total_clean_sheet = 0 
+            for i in range(lignes.count()):
+                cellules = lignes.nth(i).locator("td:nth-of-type(16)")
+                if cellules.count() > 0: 
+                    try:
+                        nombre_clean_sheet = int(cellules.first.inner_text().strip())
+                        total_clean_sheet += nombre_clean_sheet
+                    except ValueError:
+                        continue 
+            
+            return total_clean_sheet
+        
+        else:
+            return 0
+
+    @staticmethod
+    def scrap_minutes_jouees_24_25(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        if position_joueur == "Gardien de but":
+
+            selector = "tr:has(td.zentriert:has-text('24/25'))"
+            lignes = page.locator(selector)
+            if lignes.count() == 0:
+                return 0  
+            
+            total_minutes_jouees = 0 
+            for i in range(lignes.count()):
+                cellules = lignes.nth(i).locator("td:nth-of-type(17)")
+                if cellules.count() > 0: 
+                    try:
+                        texte_minutes = cellules.first.inner_text().strip()
+                        texte_minutes = texte_minutes.replace("'","").replace(".","")
+                        nombre_minutes_jouees = int(texte_minutes)
+                        total_minutes_jouees += nombre_minutes_jouees
+                    except ValueError:
+                        continue 
+            
+            return total_minutes_jouees
+        
+        else:
+            selector = "tr:has(td.zentriert:has-text('24/25'))"
+            lignes = page.locator(selector)
+            if lignes.count() == 0:
+                return 0  
+            
+            total_minutes_jouees = 0 
+            for i in range(lignes.count()):
+                cellules = lignes.nth(i).locator("td:nth-of-type(18)")
+                if cellules.count() > 0: 
+                    try:
+                        texte_minutes = cellules.first.inner_text().strip()
+                        texte_minutes = texte_minutes.replace("'","").replace(".","")
+                        nombre_minutes_jouees = int(texte_minutes)
+                        total_minutes_jouees += nombre_minutes_jouees
+                    except ValueError:
+                        continue 
+            
+            return total_minutes_jouees
+            
+        
+
