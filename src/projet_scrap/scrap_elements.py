@@ -169,7 +169,8 @@ class ScrapElements:
                     except ValueError:
                         continue 
             
-            return {"Nombre de penaltys": total_penalty}
+            return {"Nombre de penaltys 24/25": total_penalty,
+                    "Nombre de buts encaissés 24/25": 0}
 
         else:
 
@@ -188,4 +189,5 @@ class ScrapElements:
                     except ValueError:
                         continue 
             
-            return {"Nombre de buts encaissés": total_buts_encaisses}
+            return {"Nombre de penaltys 24/25": 0,
+                    "Nombre de buts encaissés 24/25": total_buts_encaisses}
