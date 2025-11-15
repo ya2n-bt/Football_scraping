@@ -20,6 +20,7 @@ def run(playwright):
     page.goto(URL, wait_until="load")
     data: dict = {
         "Nom": s.scrap_nom(page),
+        "Nationalité": s.scrap_nationalite(page),
         "Âge": s.scrap_age(page),
         "Taille": s.scrap_taille(page) ,
         "Position": s.scrap_position(page),

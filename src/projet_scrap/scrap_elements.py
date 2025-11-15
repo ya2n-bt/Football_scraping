@@ -13,6 +13,15 @@ class ScrapElements:
             return "Nom non trouvé"
         
     @staticmethod
+    def scrap_nationalite(page: Page) -> str:
+        page.wait_for_selector("span[itemprop='nationality'].data-header__content", timeout=5000)
+        nationalite_joueur = page.locator("span[itemprop='nationality'].data-header__content").inner_text().strip()
+        if nationalite_joueur is not None:
+            return nationalite_joueur
+        else:
+            "Nationalité non trouvée"
+        
+    @staticmethod
     def scrap_age(page: Page) -> int:
         page.wait_for_selector("span[itemprop='birthDate'].data-header__content", timeout=5000)
         age_joueur = page.locator("span[itemprop='birthDate'].data-header__content").inner_text().strip()
