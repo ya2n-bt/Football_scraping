@@ -79,6 +79,15 @@ class ScrapElements:
             return "Valeur non trouvée" 
         
     @staticmethod
+    def scrap_nombre_selections_internationales(page: Page) -> tuple[int, str]:
+        page.wait_for_selector("li.data-header__label:has-text('Sélections internationales/buts:') a.data-header__content--highlight", timeout=5000)
+        selection_internationales = page.locator("li.data-header__label:has-text('Sélections internationales/buts:') a.data-header__content--highlight").first.inner_text().strip()
+        if selection_internationales is not None:
+            return int(selection_internationales)
+        else:
+            return "Nombre de sélections internationales inconnu"
+
+    @staticmethod
     def scrap_nombre_matchs_24_25(page: Page) -> int:
         selector = "tr:has(td.zentriert:has-text('24/25'))"
         lignes = page.locator(selector)

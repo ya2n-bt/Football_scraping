@@ -26,6 +26,7 @@ def run(playwright):
         "Taille": s.scrap_taille(page) ,
         "Position": s.scrap_position(page),
         "Valeur": s.scrap_valeur(page),
+        "Nombre de sélections internationales": s.scrap_nombre_selections_internationales(page),
         "Minutes jouées 24/25": s.scrap_minutes_jouees_24_25(page),
         "Nombre de matchs 24/25": s.scrap_nombre_matchs_24_25(page),
         "Nombre de buts 24/25": s.scrap_nombre_buts_24_25(page),
