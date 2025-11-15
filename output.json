@@ -1,11 +1,12 @@
 {
-    "Nom": "Kylian Mbappé",
+    "Nom": "Lucas Chevalier",
     "Nationalité": "France",
-    "Âge": 26,
-    "Taille": 1.78,
-    "Position": "Avant-centre",
-    "Valeur": 180000000.0,
-    "Nombre de matchs 24/25": 56,
-    "Nombre de buts 24/25": 43,
-    "Nombre de passes décisives 24/25": 5
+    "Âge": 24,
+    "Taille": 1.89,
+    "Position": "Gardien de but",
+    "Valeur": 40000000.0,
+    "Nombre de matchs 24/25": 48,
+    "Nombre de buts 24/25": 0,
+    "Nombre de passes décisives 24/25": 0,
+    "Nombre de buts encaissés": 53
 }

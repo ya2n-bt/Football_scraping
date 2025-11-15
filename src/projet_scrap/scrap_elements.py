@@ -126,3 +126,66 @@ class ScrapElements:
         
         return total_passes_d
     
+    @staticmethod
+    def scrap_nombre_passes_d_24_25(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        if position_joueur == "Gardien de but":
+            return 0
+        
+        selector = "tr:has(td.zentriert:has-text('24/25'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_passes_d = 0 
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator("td:nth-of-type(9)")
+            if cellules.count() > 0: 
+                try:
+                    nombre_passes_d = int(cellules.first.inner_text().strip())
+                    total_passes_d += nombre_passes_d
+                except ValueError:
+                    continue 
+        
+        return total_passes_d
+    
+    @staticmethod
+    def scrap_nombre_penaltys_buts_encaisses_24_25(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        if position_joueur != "Gardien de but":
+
+            selector = "tr:has(td.zentriert:has-text('24/25'))"
+            lignes = page.locator(selector)
+            if lignes.count() == 0:
+                return 0  
+            
+            total_penalty = 0 
+            for i in range(lignes.count()):
+                cellules = lignes.nth(i).locator("td:nth-of-type(16)")
+                if cellules.count() > 0: 
+                    try:
+                        nombre_penalty = int(cellules.first.inner_text().strip())
+                        total_penalty += nombre_penalty
+                    except ValueError:
+                        continue 
+            
+            return {"Nombre de penaltys": total_penalty}
+
+        else:
+
+            selector = "tr:has(td.zentriert:has-text('24/25'))"
+            lignes = page.locator(selector)
+            if lignes.count() == 0:
+                return 0  
+            
+            total_buts_encaisses = 0 
+            for i in range(lignes.count()):
+                cellules = lignes.nth(i).locator("td:nth-of-type(15)")
+                if cellules.count() > 0: 
+                    try:
+                        nombre_buts_encaisses = int(cellules.first.inner_text().strip())
+                        total_buts_encaisses += nombre_buts_encaisses
+                    except ValueError:
+                        continue 
+            
+            return {"Nombre de buts encaissés": total_buts_encaisses}

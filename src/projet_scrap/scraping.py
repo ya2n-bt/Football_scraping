@@ -3,7 +3,7 @@ from scrap_elements import ScrapElements as s
 import re 
 import json
 
-URL = "https://www.transfermarkt.fr/kylian-mbappe/leistungsdatendetails/spieler/342229/saison//verein/0/liga/0/wettbewerb//pos/0/trainer_id/0/plus/1"
+URL = "https://www.transfermarkt.fr/lucas-chevalier/leistungsdatendetails/spieler/463600/saison//verein/0/liga/0/wettbewerb//pos/0/trainer_id/0/plus/1"
 
 def run(playwright):
     chromium = playwright.chromium
@@ -29,6 +29,9 @@ def run(playwright):
         "Nombre de buts 24/25": s.scrap_nombre_buts_24_25(page),
         "Nombre de passes décisives 24/25": s.scrap_nombre_passes_d_24_25(page),
         }
+    
+    penaltys_ou_buts_24_25 = s.scrap_nombre_penaltys_buts_encaisses_24_25(page)
+    data.update(penaltys_ou_buts_24_25)  
     browser.close()
     return data
 
