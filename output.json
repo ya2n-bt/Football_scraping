@@ -1,15 +1,16 @@
 {
-    "Nom": "Lucas Chevalier",
+    "Nom": "Kylian Mbappé",
     "Nationalité": "France",
-    "Âge": 24,
-    "Taille": 1.89,
-    "Position": "Gardien de but",
-    "Valeur": 40000000.0,
-    "Minutes jouées 24/25": 4350,
-    "Nombre de matchs 24/25": 48,
+    "Club": "Real Madrid",
+    "Âge": 26,
+    "Taille": 1.78,
+    "Position": "Avant-centre",
+    "Valeur": 180000000.0,
+    "Minutes jouées 24/25": 0,
+    "Nombre de matchs 24/25": 0,
     "Nombre de buts 24/25": 0,
     "Nombre de penaltys 24/25": 0,
     "Nombre de passes décisives 24/25": 0,
-    "Nombre clean de sheets 24/25": 13,
-    "Nombre de buts encaissés 24/25": 53
+    "Nombre clean de sheets 24/25": 0,
+    "Nombre de buts encaissés 24/25": 0
 }
