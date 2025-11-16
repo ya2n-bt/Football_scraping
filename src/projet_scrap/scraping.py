@@ -3,7 +3,7 @@ from scrap_elements import ScrapElements as s
 import re 
 import json
 
-URL = "https://www.transfermarkt.fr/kylian-mbappe/nationalmannschaft/spieler/342229/verein_id/3377/hauptwettbewerb//wettbewerb_id//start/2017-03-25/ende/2025-11-15/nurEinsatz/0/plus/1"
+URL = "https://www.transfermarkt.fr/edin-dzeko/leistungsdatendetails/spieler/28396/saison//verein/0/liga/0/wettbewerb//pos/0/trainer_id/0/plus/1"
 
 def run(playwright):
     chromium = playwright.chromium
