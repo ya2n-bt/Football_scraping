@@ -25,6 +25,7 @@ def run(playwright):
         "Âge": s.scrap_age(page),
         "Taille": s.scrap_taille(page) ,
         "Position": s.scrap_position(page),
+        "Fin de contrat dans": s.scrap_fin_contrat(page),
         "Valeur": s.scrap_valeur(page),
         "Nombre de sélections internationales": s.scrap_nombre_selections_internationales(page),
         "Minutes jouées 24/25": s.scrap_minutes_jouees_24_25(page),

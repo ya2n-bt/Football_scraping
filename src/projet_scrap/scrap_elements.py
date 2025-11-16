@@ -1,6 +1,9 @@
 import re
 import regex
+import locale
+locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
 from playwright.sync_api import Page
+from datetime import datetime
 
 class ScrapElements:
     @staticmethod
@@ -60,6 +63,29 @@ class ScrapElements:
         else:
             return "Position non trouvé"
     
+
+    @staticmethod
+    def scrap_fin_contrat(page: Page) -> int:
+        repere = page.get_by_text("Contrat jusqu'à:")
+        fin_de_contrat = repere.locator("span.data-header__content").inner_text().strip()
+        
+        if fin_de_contrat:
+            try:
+                date_fin = datetime.strptime(fin_de_contrat, "%d %B %Y").date()
+                print(f"Valeur extraite pour la date de fin de contrat : '{fin_de_contrat}'")
+                
+                date_actuelle = datetime.today().date()
+                jours_restants = (date_fin - date_actuelle).days
+                
+                return jours_restants
+            except ValueError:
+                return "Format de date invalide"
+        else:
+            return "Fin de contrat non trouvée"
+        
+        
+
+
     @staticmethod
     def scrap_valeur(page: Page) -> float:
         page.wait_for_selector("a.data-header__market-value-wrapper", timeout=5000)
