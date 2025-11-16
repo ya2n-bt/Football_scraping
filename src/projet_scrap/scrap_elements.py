@@ -35,7 +35,7 @@ class ScrapElements:
             return "Club non trouvé"
         
     @staticmethod
-    def scrap_age(page: Page) -> int:
+    def scrap_age(page: Page) -> tuple[int, str]:
         page.wait_for_selector("span[itemprop='birthDate'].data-header__content", timeout=5000)
         age_joueur = page.locator("span[itemprop='birthDate'].data-header__content").inner_text().strip()
         age_joueur_filtre = re.search(r'\((.*?)\)', age_joueur)
@@ -45,7 +45,7 @@ class ScrapElements:
             return "Âge non trouvé"
         
     @staticmethod
-    def scrap_taille(page: Page) -> float:
+    def scrap_taille(page: Page) -> tuple[float, str]:
         page.wait_for_selector("span[itemprop='height'].data-header__content", timeout=5000)
         taille_joueur = page.locator("span[itemprop='height'].data-header__content").inner_text().strip()
         taille_joueur_filtre = taille_joueur.replace(' m', '').replace(',', '.').strip()
@@ -62,10 +62,9 @@ class ScrapElements:
             return position_joueur
         else:
             return "Position non trouvé"
-    
 
     @staticmethod
-    def scrap_fin_contrat(page: Page) -> int:
+    def scrap_fin_contrat(page: Page) -> tuple[int, str]:
         repere = page.get_by_text("Contrat jusqu'à:")
         fin_de_contrat = repere.locator("span.data-header__content").inner_text().strip()
         
@@ -82,12 +81,9 @@ class ScrapElements:
                 return "Format de date invalide"
         else:
             return "Fin de contrat non trouvée"
-        
-        
-
 
     @staticmethod
-    def scrap_valeur(page: Page) -> float:
+    def scrap_valeur(page: Page) -> tuple[float, str]:
         page.wait_for_selector("a.data-header__market-value-wrapper", timeout=5000)
         valeur_brute = page.locator("a.data-header__market-value-wrapper").inner_text().split()[0].strip()
         valeur_brute = valeur_brute.replace(',', '.') 
@@ -310,5 +306,182 @@ class ScrapElements:
             
             return total_minutes_jouees
             
+        
+
+
+
+
+
+    @staticmethod
+    def scrap_nombre_matchs_23_24(page: Page) -> int:
+        selector = "tr:has(td.zentriert:has-text('23/24'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_matchs = 0 
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator("td:nth-of-type(6)")
+            if cellules.count() > 0: 
+                try:
+                    nombre_matchs = int(cellules.first.inner_text().strip())
+                    total_matchs += nombre_matchs
+                except ValueError:
+                    continue 
+        
+        return total_matchs
+
+    @staticmethod
+    def scrap_nombre_buts_23_24(page: Page) -> int:
+        selector = "tr:has(td.zentriert:has-text('23/24'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_buts = 0 
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator("td:nth-of-type(8)")
+            if cellules.count() > 0: 
+                try:
+                    nombre_buts = int(cellules.first.inner_text().strip())
+                    total_buts += nombre_buts
+                except ValueError:
+                    continue 
+        
+        return total_buts
+
+    @staticmethod
+    def scrap_nombre_passes_d_23_24(page: Page) -> int:
+        selector = "tr:has(td.zentriert:has-text('23/24'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_passes_d = 0 
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator("td:nth-of-type(9)")
+            if cellules.count() > 0: 
+                try:
+                    nombre_passes_d = int(cellules.first.inner_text().strip())
+                    total_passes_d += nombre_passes_d
+                except ValueError:
+                    continue 
+        
+        return total_passes_d
+
+    @staticmethod
+    def scrap_nombre_penaltys_23_24(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        if position_joueur == "Gardien de but":
+            return 0
+        else: 
+            selector = "tr:has(td.zentriert:has-text('23/24'))"
+            lignes = page.locator(selector)
+            if lignes.count() == 0:
+                return 0  
+            
+            total_penalty = 0 
+            for i in range(lignes.count()):
+                cellules = lignes.nth(i).locator("td:nth-of-type(16)")
+                if cellules.count() > 0: 
+                    try:
+                        nombre_penalty = int(cellules.first.inner_text().strip())
+                        total_penalty += nombre_penalty
+                    except ValueError:
+                        continue 
+            
+            return total_penalty
+
+    @staticmethod
+    def scrap_nombre_buts_encaisses_23_24(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        if position_joueur != "Gardien de but":
+            return 0
+        else: 
+            selector = "tr:has(td.zentriert:has-text('23/24'))"
+            lignes = page.locator(selector)
+            if lignes.count() == 0:
+                return 0  
+            
+            total_buts_encaisses = 0 
+            for i in range(lignes.count()):
+                cellules = lignes.nth(i).locator("td:nth-of-type(15)")
+                if cellules.count() > 0: 
+                    try:
+                        nombre_buts_encaisses = int(cellules.first.inner_text().strip())
+                        total_buts_encaisses += nombre_buts_encaisses
+                    except ValueError:
+                        continue 
+            
+            return total_buts_encaisses
+
+    @staticmethod
+    def scrap_nombre_clean_sheets_23_24(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        if position_joueur == "Gardien de but":
+
+            selector = "tr:has(td.zentriert:has-text('23/24'))"
+            lignes = page.locator(selector)
+            if lignes.count() == 0:
+                return 0  
+            
+            total_clean_sheet = 0 
+            for i in range(lignes.count()):
+                cellules = lignes.nth(i).locator("td:nth-of-type(16)")
+                if cellules.count() > 0: 
+                    try:
+                        nombre_clean_sheet = int(cellules.first.inner_text().strip())
+                        total_clean_sheet += nombre_clean_sheet
+                    except ValueError:
+                        continue 
+            
+            return total_clean_sheet
+        
+        else:
+            return 0
+
+    @staticmethod
+    def scrap_minutes_jouees_23_24(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        if position_joueur == "Gardien de but":
+
+            selector = "tr:has(td.zentriert:has-text('23/24'))"
+            lignes = page.locator(selector)
+            if lignes.count() == 0:
+                return 0  
+            
+            total_minutes_jouees = 0 
+            for i in range(lignes.count()):
+                cellules = lignes.nth(i).locator("td:nth-of-type(17)")
+                if cellules.count() > 0: 
+                    try:
+                        texte_minutes = cellules.first.inner_text().strip()
+                        texte_minutes = texte_minutes.replace("'","").replace(".","")
+                        nombre_minutes_jouees = int(texte_minutes)
+                        total_minutes_jouees += nombre_minutes_jouees
+                    except ValueError:
+                        continue 
+            
+            return total_minutes_jouees
+        
+        else:
+            selector = "tr:has(td.zentriert:has-text('23/24'))"
+            lignes = page.locator(selector)
+            if lignes.count() == 0:
+                return 0  
+            
+            total_minutes_jouees = 0 
+            for i in range(lignes.count()):
+                cellules = lignes.nth(i).locator("td:nth-of-type(18)")
+                if cellules.count() > 0: 
+                    try:
+                        texte_minutes = cellules.first.inner_text().strip()
+                        texte_minutes = texte_minutes.replace("'","").replace(".","")
+                        nombre_minutes_jouees = int(texte_minutes)
+                        total_minutes_jouees += nombre_minutes_jouees
+                    except ValueError:
+                        continue 
+            
+            return total_minutes_jouees
         
 
