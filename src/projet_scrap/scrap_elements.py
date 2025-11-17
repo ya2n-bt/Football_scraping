@@ -130,6 +130,68 @@ class ScrapElements:
         return total_matchs
 
     @staticmethod
+    def scrap_entrees_en_jeu_25_26(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+
+        if position_joueur == "Gardien de but":
+            td_selector = "td:nth-of-type(10)"
+        else:
+            td_selector = "td:nth-of-type(11)"
+        
+        selector = "tr:has(td.zentriert:has-text('25/26'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_entrees_jeu = 0
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator(td_selector)
+            if cellules.count() > 0: 
+                try:
+                    nombre_entrees_jeu = int(cellules.first.inner_text().strip())
+                    total_entrees_jeu += nombre_entrees_jeu
+                except ValueError:
+                    continue 
+        
+        return total_entrees_jeu
+    
+    @staticmethod
+    def scrap_titularisations_25_26(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        
+        if position_joueur == "Gardien de but":
+            td_selector_entrees = "td:nth-of-type(10)"
+        else:
+            td_selector_entrees = "td:nth-of-type(11)"
+        
+        selector = "tr:has(td.zentriert:has-text('25/26'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_entrees_jeu = 0
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator(td_selector_entrees)
+            if cellules.count() > 0: 
+                try:
+                    nombre_entrees_jeu = int(cellules.first.inner_text().strip())
+                    total_entrees_jeu += nombre_entrees_jeu
+                except ValueError:
+                    continue 
+        
+        total_matchs = 0
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator("td:nth-of-type(6)")
+            if cellules.count() > 0: 
+                try:
+                    nombre_matchs = int(cellules.first.inner_text().strip())
+                    total_matchs += nombre_matchs
+                except ValueError:
+                    continue 
+        
+        return total_matchs - total_entrees_jeu
+
+    @staticmethod
     def scrap_nombre_buts_25_26(page: Page) -> int:
         selector = "tr:has(td.zentriert:has-text('25/26'))"
         lignes = page.locator(selector)
@@ -301,6 +363,68 @@ class ScrapElements:
         
         return total_matchs
     
+    @staticmethod
+    def scrap_entrees_en_jeu_24_25(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+
+        if position_joueur == "Gardien de but":
+            td_selector = "td:nth-of-type(10)"
+        else:
+            td_selector = "td:nth-of-type(11)"
+        
+        selector = "tr:has(td.zentriert:has-text('24/25'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_entrees_jeu = 0
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator(td_selector)
+            if cellules.count() > 0: 
+                try:
+                    nombre_entrees_jeu = int(cellules.first.inner_text().strip())
+                    total_entrees_jeu += nombre_entrees_jeu
+                except ValueError:
+                    continue 
+        
+        return total_entrees_jeu
+    
+    @staticmethod
+    def scrap_titularisations_24_25(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        
+        if position_joueur == "Gardien de but":
+            td_selector_entrees = "td:nth-of-type(10)"
+        else:
+            td_selector_entrees = "td:nth-of-type(11)"
+        
+        selector = "tr:has(td.zentriert:has-text('24/25'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_entrees_jeu = 0
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator(td_selector_entrees)
+            if cellules.count() > 0: 
+                try:
+                    nombre_entrees_jeu = int(cellules.first.inner_text().strip())
+                    total_entrees_jeu += nombre_entrees_jeu
+                except ValueError:
+                    continue 
+        
+        total_matchs = 0
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator("td:nth-of-type(6)")
+            if cellules.count() > 0: 
+                try:
+                    nombre_matchs = int(cellules.first.inner_text().strip())
+                    total_matchs += nombre_matchs
+                except ValueError:
+                    continue 
+        
+        return total_matchs - total_entrees_jeu
+
     @staticmethod
     def scrap_nombre_buts_24_25(page: Page) -> int:
         selector = "tr:has(td.zentriert:has-text('24/25'))"
@@ -496,6 +620,68 @@ class ScrapElements:
                     continue 
         
         return total_matchs
+
+    @staticmethod
+    def scrap_entrees_en_jeu_23_24(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+
+        if position_joueur == "Gardien de but":
+            td_selector = "td:nth-of-type(10)"
+        else:
+            td_selector = "td:nth-of-type(11)"
+        
+        selector = "tr:has(td.zentriert:has-text('23/24'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_entrees_jeu = 0
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator(td_selector)
+            if cellules.count() > 0: 
+                try:
+                    nombre_entrees_jeu = int(cellules.first.inner_text().strip())
+                    total_entrees_jeu += nombre_entrees_jeu
+                except ValueError:
+                    continue 
+        
+        return total_entrees_jeu
+    
+    @staticmethod
+    def scrap_titularisations_23_24(page: Page) -> int:
+        position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
+        
+        if position_joueur == "Gardien de but":
+            td_selector_entrees = "td:nth-of-type(10)"
+        else:
+            td_selector_entrees = "td:nth-of-type(11)"
+        
+        selector = "tr:has(td.zentriert:has-text('23/24'))"
+        lignes = page.locator(selector)
+        if lignes.count() == 0:
+            return 0  
+        
+        total_entrees_jeu = 0
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator(td_selector_entrees)
+            if cellules.count() > 0: 
+                try:
+                    nombre_entrees_jeu = int(cellules.first.inner_text().strip())
+                    total_entrees_jeu += nombre_entrees_jeu
+                except ValueError:
+                    continue 
+        
+        total_matchs = 0
+        for i in range(lignes.count()):
+            cellules = lignes.nth(i).locator("td:nth-of-type(6)")
+            if cellules.count() > 0: 
+                try:
+                    nombre_matchs = int(cellules.first.inner_text().strip())
+                    total_matchs += nombre_matchs
+                except ValueError:
+                    continue 
+        
+        return total_matchs - total_entrees_jeu
 
     @staticmethod
     def scrap_nombre_buts_23_24(page: Page) -> int:
