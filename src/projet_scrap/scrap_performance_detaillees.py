@@ -5,7 +5,7 @@ locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
 from playwright.sync_api import Page
 from datetime import datetime
 
-class ScrapElements:
+class ScrapPerformancesDetaillees:
     @staticmethod
     def scrap_nom(page: Page) -> str:
         page.wait_for_selector(".data-header__headline-wrapper", timeout=5000)
@@ -531,7 +531,6 @@ class ScrapElements:
                         continue 
             
             return total_buts_encaisses
-
         
     @staticmethod
     def scrap_nombre_clean_sheets_24_25(page: Page) -> int:
@@ -648,7 +647,7 @@ class ScrapElements:
         return total_entrees_jeu
     
     @staticmethod
-    def scrap_titularisations_23_24(page: Page) -> int:
+    def scrap_titularisations_23_24(page: Page) -> tuple[int, str]:
         position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
         
         if position_joueur == "Gardien de but":
@@ -836,4 +835,8 @@ class ScrapElements:
             
             return total_minutes_jouees
         
+
+
+
+
 
