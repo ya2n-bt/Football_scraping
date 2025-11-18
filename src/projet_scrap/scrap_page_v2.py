@@ -87,7 +87,8 @@ def run(playwright):
     goto_blessure_page(page, URL)
     data.update({
         "Nombre de blessures sur les 3 dernières saisons": sb.scrap_nombre_blessures(page),
-        "Nombre de matchs manqués sur les 3 dernières saisons": sb.scrap_matchs_manques(page)
+        "Nombre de matchs manqués sur les 3 dernières saisons": sb.scrap_matchs_manques(page),
+        "Nombre de jours sous blessures": sb.scrap_jours_blessures(page)
     })
 
     browser.close()
