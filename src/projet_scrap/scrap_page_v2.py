@@ -1,6 +1,7 @@
 from playwright.sync_api import sync_playwright
 from scrap_performance_detaillees import ScrapPerformancesDetaillees as s
 from scrap_profil import ScrapProfil as sp
+from scrap_blessure import ScrapBlessure as sb
 import re 
 import json
 
@@ -8,6 +9,11 @@ URL = "https://www.transfermarkt.fr/kylian-mbappe/leistungsdatendetails/spieler/
 
 def goto_profil_page(page, base_url):
     profil_url = base_url.replace("leistungsdatendetails", "profil")
+    page.goto(profil_url, wait_until="load")
+    return profil_url
+
+def goto_blessure_page(page, base_url):
+    profil_url = base_url.replace("leistungsdatendetails", "verletzungen")
     page.goto(profil_url, wait_until="load")
     return profil_url
 
@@ -27,6 +33,7 @@ def run(playwright):
     data: dict = {
         "Nom": s.scrap_nom(page),
         "Nationalité": s.scrap_nationalite(page),
+        "Ligue": s.scrap_ligue(page),
         "Club": s.scrap_club(page),
         "Âge": s.scrap_age(page),
         "Taille": s.scrap_taille(page) ,
@@ -77,12 +84,18 @@ def run(playwright):
         "Pied fort": sp.scrap_pied_fort(page)
     })
 
+    goto_blessure_page(page, URL)
+    data.update({
+        "Nombre de blessures sur les 3 dernières saisons": sb.scrap_nombre_blessures(page),
+        "Nombre de matchs manqués sur les 3 dernières saisons": sb.scrap_matchs_manques(page)
+    })
+
     browser.close()
     return data
 
 with sync_playwright() as playwright:
     data = run(playwright)
 
-output_file = "info_joueur_2.json"
+output_file = "info_joueur_v2.json"
 with open(output_file, "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=4)
