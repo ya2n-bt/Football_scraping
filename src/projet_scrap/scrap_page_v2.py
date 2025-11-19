@@ -2,6 +2,7 @@ from playwright.sync_api import sync_playwright
 from scrap_performance_detaillees import ScrapPerformancesDetaillees as s
 from scrap_profil import ScrapProfil as sp
 from scrap_blessure import ScrapBlessure as sb
+from scrap_trophees import ScrapTrophees as st
 import re 
 import json
 
@@ -14,6 +15,11 @@ def goto_profil_page(page, base_url):
 
 def goto_blessure_page(page, base_url):
     profil_url = base_url.replace("leistungsdatendetails", "verletzungen")
+    page.goto(profil_url, wait_until="load")
+    return profil_url
+
+def goto_trophees_page(page, base_url):
+    profil_url = base_url.replace("leistungsdatendetails", "erfolge")
     page.goto(profil_url, wait_until="load")
     return profil_url
 
@@ -89,6 +95,11 @@ def run(playwright):
         "Nombre de blessures sur les 3 dernières saisons": sb.scrap_nombre_blessures(page),
         "Nombre de matchs manqués sur les 3 dernières saisons": sb.scrap_matchs_manques(page),
         "Nombre de jours sous blessures": sb.scrap_jours_blessures(page)
+    })
+
+    goto_trophees_page(page, URL)
+    data.update({
+        "Nombre de trophées sur les 3 dernières saisons": st.scrap_nombre_trophees(page)
     })
 
     browser.close()

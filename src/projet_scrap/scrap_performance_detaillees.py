@@ -80,7 +80,6 @@ class ScrapPerformancesDetaillees:
         if fin_de_contrat:
             try:
                 date_fin = datetime.strptime(fin_de_contrat, "%d %B %Y").date()
-                print(f"Valeur extraite pour la date de fin de contrat : '{fin_de_contrat}'")
                 
                 date_actuelle = datetime.today().date()
                 jours_restants = (date_fin - date_actuelle).days
