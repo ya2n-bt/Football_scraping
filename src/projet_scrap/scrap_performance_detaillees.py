@@ -26,13 +26,12 @@ class ScrapPerformancesDetaillees:
             "Nationalité non trouvée"
 
     @staticmethod
-    def scrap_ligue(page: Page) -> str:
-        page.wait_for_selector(".data-header__league-link", timeout=5000)
-        ligue_joueur = page.locator(".data-header__league-link").inner_text().strip()
-        if ligue_joueur is not None:
-            return ligue_joueur
-        else:
-            return "Ligue non trouvé"
+    def scrap_ligue(page: Page) -> str | None:
+        ligue_locator = page.locator(".data-header__league-link")
+        if ligue_locator.is_visible(timeout=1000):
+            return ligue_locator.inner_text().strip()
+        
+        return "Ligue non trouvée"
         
     @staticmethod
     def scrap_club(page: Page) -> str:

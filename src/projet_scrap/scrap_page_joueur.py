@@ -1,9 +1,27 @@
 from playwright.sync_api import sync_playwright
 from scrap_performance_detaillees import ScrapPerformancesDetaillees as s
+from scrap_profil import ScrapProfil as sp
+from scrap_blessure import ScrapBlessure as sb
+from scrap_trophees import ScrapTrophees as st
+from Basemodel import JoueurStats
 import re 
-import json
 
 URL = "https://www.transfermarkt.fr/kylian-mbappe/leistungsdatendetails/spieler/342229/saison//verein/0/liga/0/wettbewerb//pos/0/trainer_id/0/plus/1"
+
+def goto_profil_page(page, base_url):
+    profil_url = base_url.replace("leistungsdatendetails", "profil")
+    page.goto(profil_url, wait_until="load")
+    return profil_url
+
+def goto_blessure_page(page, base_url):
+    profil_url = base_url.replace("leistungsdatendetails", "verletzungen")
+    page.goto(profil_url, wait_until="load")
+    return profil_url
+
+def goto_trophees_page(page, base_url):
+    profil_url = base_url.replace("leistungsdatendetails", "erfolge")
+    page.goto(profil_url, wait_until="load")
+    return profil_url
 
 def run(playwright):
     chromium = playwright.chromium
@@ -21,6 +39,7 @@ def run(playwright):
     data: dict = {
         "Nom": s.scrap_nom(page),
         "Nationalité": s.scrap_nationalite(page),
+        "Ligue": s.scrap_ligue(page),
         "Club": s.scrap_club(page),
         "Âge": s.scrap_age(page),
         "Taille": s.scrap_taille(page) ,
@@ -28,6 +47,9 @@ def run(playwright):
         "Fin de contrat dans": s.scrap_fin_contrat(page),
         "Valeur": s.scrap_valeur(page),
         "Nombre de sélections internationales": s.scrap_nombre_selections_internationales(page),
+
+        # --- STATS 25/26 ---
+
         "Minutes jouées 25/26": s.scrap_minutes_jouees_25_26(page),
         "Nombre de matchs 25/26": s.scrap_nombre_matchs_25_26(page),
         "Nombre d'entrées en jeu 25/26": s.scrap_entrees_en_jeu_25_26(page),
@@ -37,6 +59,9 @@ def run(playwright):
         "Nombre de passes décisives 25/26": s.scrap_nombre_passes_d_25_26(page),
         "Nombre clean de sheets 25/26": s.scrap_nombre_clean_sheets_25_26(page),
         "Nombre de buts encaissés 25/26": s.scrap_nombre_buts_encaisses_25_26(page),
+
+        # --- STATS 24/25 ---
+
         "Minutes jouées 24/25": s.scrap_minutes_jouees_24_25(page),
         "Nombre de matchs 24/25": s.scrap_nombre_matchs_24_25(page),
         "Nombre d'entrées en jeu 24/25": s.scrap_entrees_en_jeu_24_25(page),
@@ -46,6 +71,8 @@ def run(playwright):
         "Nombre de passes décisives 24/25": s.scrap_nombre_passes_d_24_25(page),
         "Nombre clean de sheets 24/25": s.scrap_nombre_clean_sheets_24_25(page),
         "Nombre de buts encaissés 24/25": s.scrap_nombre_buts_encaisses_24_25(page),
+
+        # --- STATS 23/24 ---
         "Minutes jouées 23/24": s.scrap_minutes_jouees_23_24(page),
         "Nombre de matchs 23/24": s.scrap_nombre_matchs_23_24(page),
         "Nombre d'entrées en jeu 23/24": s.scrap_entrees_en_jeu_23_24(page),
@@ -57,12 +84,31 @@ def run(playwright):
         "Nombre de buts encaissés 23/24": s.scrap_nombre_buts_encaisses_23_24(page),
         }
     
+    goto_profil_page(page, URL)
+    data.update({
+        "Pied fort": sp.scrap_pied_fort(page)
+    })
+
+    goto_blessure_page(page, URL)
+    data.update({
+        "Nombre de blessures sur les 3 dernières saisons": sb.scrap_nombre_blessures(page),
+        "Nombre de matchs manqués sur les 3 dernières saisons": sb.scrap_matchs_manques(page),
+        "Nombre de jours sous blessures": sb.scrap_jours_blessures(page)
+    })
+
+    goto_trophees_page(page, URL)
+    data.update({
+        "Nombre de trophées sur les 3 dernières saisons": st.scrap_nombre_trophees(page)
+    })
+
     browser.close()
-    return data
+    
+    joueur = JoueurStats(**data)
+    return joueur
 
 with sync_playwright() as playwright:
-    data = run(playwright)
+    joueur_data = run(playwright)
 
-output_file = "info_joueur_v1.json"
+output_file = "info_joueur_seul.json"
 with open(output_file, "w", encoding="utf-8") as f:
-    json.dump(data, f, ensure_ascii=False, indent=4)
+    f.write(joueur_data.model_dump_json(indent=4, by_alias=False))
