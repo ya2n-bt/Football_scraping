@@ -3,8 +3,8 @@ from scrap_performance_detaillees import ScrapPerformancesDetaillees as s
 from scrap_profil import ScrapProfil as sp
 from scrap_blessure import ScrapBlessure as sb
 from scrap_trophees import ScrapTrophees as st
+from Basemodel import JoueurStats
 import re 
-import json
 
 URL = "https://www.transfermarkt.fr/kylian-mbappe/leistungsdatendetails/spieler/342229/saison//verein/0/liga/0/wettbewerb//pos/0/trainer_id/0/plus/1"
 
@@ -85,7 +85,6 @@ def run(playwright):
         }
     
     goto_profil_page(page, URL)
-
     data.update({
         "Pied fort": sp.scrap_pied_fort(page)
     })
@@ -103,11 +102,15 @@ def run(playwright):
     })
 
     browser.close()
-    return data
+    
+    joueur = JoueurStats(**data)
+    return joueur
 
 with sync_playwright() as playwright:
-    data = run(playwright)
+    joueur_data = run(playwright)
 
 output_file = "info_joueur_v2.json"
 with open(output_file, "w", encoding="utf-8") as f:
-    json.dump(data, f, ensure_ascii=False, indent=4)
+    f.write(joueur_data.model_dump_json(indent=4, by_alias=False))
+
+print(f"Données sauvegardées dans {output_file}")
