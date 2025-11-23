@@ -54,12 +54,15 @@ class ScrapPerformancesDetaillees:
         
     @staticmethod
     def scrap_taille(page: Page) -> tuple[float, str]:
-        page.wait_for_selector("span[itemprop='height'].data-header__content", timeout=5000)
-        taille_joueur = page.locator("span[itemprop='height'].data-header__content").inner_text().strip()
-        taille_joueur_filtre = taille_joueur.replace(' m', '').replace(',', '.').strip()
-        if taille_joueur_filtre is not None:
-            return float(taille_joueur_filtre)
-        else:
+        selector = "span[itemprop='height'].data-header__content"
+        if page.locator(selector).first.is_visible(timeout=500):
+            try:
+                taille_joueur = page.locator(selector).first.inner_text().strip()
+                taille_clean = taille_joueur.replace("m", "").replace(",", ".").strip()
+                return float(taille_clean)
+            except ValueError:
+                return "Taille non trouvé"
+        else:   
             return "Taille non trouvé"
         
     @staticmethod
@@ -90,33 +93,46 @@ class ScrapPerformancesDetaillees:
             return "Fin de contrat non trouvée"
 
     @staticmethod
-    def scrap_valeur(page: Page) -> tuple[float, str]:
-        page.wait_for_selector("a.data-header__market-value-wrapper", timeout=5000)
-        valeur_brute = page.locator("a.data-header__market-value-wrapper").inner_text().split()[0].strip()
-        valeur_brute = valeur_brute.replace(',', '.') 
-        unite = page.locator("a.data-header__market-value-wrapper span.waehrung").inner_text().strip()
-        if "mio. €" in unite:
-            multiplicateur = 1_000_000
-        elif "K €" in unite:
-            multiplicateur = 1_000
-        else:
-            multiplicateur = 1 
-        valeur = float(valeur_brute) * multiplicateur
+    def scrap_valeur(page: Page) -> float | str | None:
+        selecteur_valeur = "a.data-header__market-value-wrapper"
+        if page.locator(selecteur_valeur).is_visible(timeout=500):
+            try:
+                texte_complet = page.locator(selecteur_valeur).inner_text()
+                valeur_brute = texte_complet.split()[0].strip().replace(',', '.')
+                
+                unite_locator = page.locator(f"{selecteur_valeur} span.waehrung")
+                if unite_locator.is_visible():
+                    unite = unite_locator.inner_text().strip()
+                else:
+                    unite = texte_complet 
+                
+                if "mio." in unite or "m" in unite.lower(): 
+                    multiplicateur = 1_000_000
+                elif "k" in unite.lower(): 
+                    multiplicateur = 1_000
+                else:
+                    multiplicateur = 1 
+                
+                valeur = float(valeur_brute) * multiplicateur
+                return valeur
 
-        try:
-            return valeur
-        except ValueError:
-            return "Valeur non trouvée" 
+            except (ValueError, IndexError):
+                return "Valeur non trouvée"
+            
+        return "Valeur non trouvée" 
         
     @staticmethod
-    def scrap_nombre_selections_internationales(page: Page) -> tuple[int, str]:
+    def scrap_nombre_selections_internationales(page: Page) -> int | str | None:
+        selecteur = "li.data-header__label:has-text('Sélections internationales/buts:') a.data-header__content--highlight"
 
-        page.wait_for_selector("li.data-header__label:has-text('Sélections internationales/buts:') a.data-header__content--highlight", timeout=5000)
-        selection_internationales = page.locator("li.data-header__label:has-text('Sélections internationales/buts:') a.data-header__content--highlight").first.inner_text().strip()
-        if selection_internationales is not None:
-            return int(selection_internationales)
-        else:
-            return "Nombre de sélections internationales inconnu"
+        if page.locator(selecteur).first.is_visible(timeout=500):
+            try:
+                text_selections = page.locator(selecteur).first.inner_text().strip()
+                return int(text_selections)
+            except ValueError:
+                return 0
+                
+        return 0
 
 # --- STATS 25/26 ---
 

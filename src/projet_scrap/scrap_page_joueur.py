@@ -6,7 +6,7 @@ from scrap_trophees import ScrapTrophees as st
 from Basemodel import JoueurStats
 import re 
 
-URL = "https://www.transfermarkt.fr/kylian-mbappe/leistungsdatendetails/spieler/342229/saison//verein/0/liga/0/wettbewerb//pos/0/trainer_id/0/plus/1"
+URL = "https://www.transfermarkt.fr/joel-mvuka/leistungsdatendetails/spieler/700078/saison//verein/0/liga/0/wettbewerb//pos/0/trainer_id/0/plus/1"
 
 def goto_profil_page(page, base_url):
     profil_url = base_url.replace("leistungsdatendetails", "profil")
