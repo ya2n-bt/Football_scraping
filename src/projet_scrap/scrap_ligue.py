@@ -3,6 +3,7 @@ from scrap_performance_detaillees import ScrapPerformancesDetaillees as s
 from scrap_profil import ScrapProfil as sp
 from scrap_blessure import ScrapBlessure as sb
 from scrap_trophees import ScrapTrophees as st
+from scrap_club_info import ScrapClubInfo as sci
 from Basemodel import JoueurStats 
 import re
 import json
@@ -23,7 +24,7 @@ def goto_trophees_page(page, base_url):
     page.goto(profil_url, wait_until="domcontentloaded", timeout=60000)
 
 # --- SCRAPING D'UN JOUEUR (Identique) ---
-def scraper_un_joueur(page, url_joueur):
+def scraper_un_joueur(page, url_joueur, club_infos=None):
     # ... (Ton code scraper_un_joueur reste EXACTEMENT le même ici) ...
     # Pour ne pas surcharger la réponse, je ne le recolle pas, 
     # mais garde ta fonction telle quelle ! 
@@ -84,6 +85,13 @@ def scraper_un_joueur(page, url_joueur):
             "Nombre de buts encaissés 23/24": s.scrap_nombre_buts_encaisses_23_24(page),
         }
 
+        if club_infos:
+            raw_data["Valeur totale du club"] = club_infos.get("valeur")
+            raw_data["Classement actuel du club"] = club_infos.get("classement")
+        else:
+            raw_data["Valeur totale du club"] = "Valeur non trouvée"
+            raw_data["Classement actuel du club"] = "Classement non trouvé"
+
         goto_profil_page(page, url_stats)
         raw_data["Pied fort"] = sp.scrap_pied_fort(page)
 
@@ -110,8 +118,14 @@ def scraper_club(page, url_club):
     
     page.goto(url_club, wait_until="domcontentloaded", timeout=60000)
     
+    print("   📊 Récupération des infos du club...")
+    infos_du_club = {
+        "valeur": sci.scrap_valeur_totale_club(page),
+        "classement": sci.scrap_classement_ligue(page)
+    }
+    print(f"   -> Valeur: {infos_du_club['valeur']} | Classement: {infos_du_club['classement']}")
 
-    # Récupération des liens
+
     print("   Récupération des joueurs...")
     page.wait_for_selector("td.hauptlink a", timeout=15000)
     liens = page.locator("td.hauptlink a").all()
@@ -129,7 +143,7 @@ def scraper_club(page, url_club):
     
     # Boucle sur les joueurs du club
     for i, url in enumerate(urls_joueurs):
-        joueur = scraper_un_joueur(page, url)
+        joueur = scraper_un_joueur(page, url, club_infos=infos_du_club)
         if joueur:
             club_data.append(joueur.model_dump(by_alias=False))
         
@@ -140,7 +154,7 @@ def scraper_club(page, url_club):
 
 # --- FONCTION PRINCIPALE : LIGUE 1 ---
 def run_ligue_1():
-    URL_LIGUE = "https://www.transfermarkt.fr/ligue-1/startseite/wettbewerb/FR1"
+    URL_LIGUE = "https://www.transfermarkt.fr/premier-league/startseite/wettbewerb/GB1"
     
     data_globale = []
     
@@ -201,7 +215,7 @@ def run_ligue_1():
 if __name__ == "__main__":
     data_finale = run_ligue_1()
 
-    output_file = "ligue1_complet.json"
+    output_file = "pl_complet.json"
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(data_finale, f, indent=4, ensure_ascii=False)
 

@@ -9,6 +9,8 @@ class JoueurStats(BaseModel):
     nationalite: Optional[str] = Field(alias="Nationalité", default=None)
     ligue: Optional[str] = Field(alias="Ligue", default=None)
     club: Optional[str] = Field(alias="Club", default=None)
+    valeur_club: float | str | None = Field(alias="Valeur totale du club", default=None)
+    classement_club: int | str | None = Field(alias="Classement actuel du club", default=None)
     age: int | str | None = Field(alias="Âge", default=None)
     taille: float | str | None = Field(alias="Taille", default=None)
     position: Optional[str] = Field(alias="Position", default=None)
