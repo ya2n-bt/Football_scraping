@@ -109,7 +109,7 @@ def scraper_un_joueur(page, url_joueur):
 
 def run_equipe():    
     # --- SIMPLIFICATION : ON PART DIRECTEMENT DU PSG, objectif : généraliser pour tous les clubs de la ligue ---
-    URL_CLUB = "https://www.transfermarkt.fr/paris-saint-germain/startseite/verein/583"
+    URL_CLUB = "https://www.transfermarkt.fr/bayer-04-leverkusen/startseite/verein/15"
     
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=False)

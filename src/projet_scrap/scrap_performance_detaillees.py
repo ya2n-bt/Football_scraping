@@ -139,7 +139,7 @@ class ScrapPerformancesDetaillees:
 
     @staticmethod
     def scrap_nombre_matchs_25_26(page: Page) -> int:
-        selector = "tr:has(td.zentriert:has-text('25/26'))"
+        selector = "tr:has(td.zentriert:has-text('25/26')), tr:has(td.zentriert:has-text('2025')), tr:has(td.zentriert:has-text('2026'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -165,7 +165,7 @@ class ScrapPerformancesDetaillees:
         else:
             td_selector = "td:nth-of-type(11)"
         
-        selector = "tr:has(td.zentriert:has-text('25/26'))"
+        selector = "tr:has(td.zentriert:has-text('25/26')), tr:has(td.zentriert:has-text('2025')), tr:has(td.zentriert:has-text('2026'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -191,7 +191,7 @@ class ScrapPerformancesDetaillees:
         else:
             td_selector_entrees = "td:nth-of-type(11)"
         
-        selector = "tr:has(td.zentriert:has-text('25/26'))"
+        selector = "tr:has(td.zentriert:has-text('25/26')), tr:has(td.zentriert:has-text('2025')), tr:has(td.zentriert:has-text('2026'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -220,7 +220,7 @@ class ScrapPerformancesDetaillees:
 
     @staticmethod
     def scrap_nombre_buts_25_26(page: Page) -> int:
-        selector = "tr:has(td.zentriert:has-text('25/26'))"
+        selector = "tr:has(td.zentriert:has-text('25/26')), tr:has(td.zentriert:has-text('2025')), tr:has(td.zentriert:has-text('2026'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -239,7 +239,7 @@ class ScrapPerformancesDetaillees:
 
     @staticmethod
     def scrap_nombre_passes_d_25_26(page: Page) -> int:
-        selector = "tr:has(td.zentriert:has-text('25/26'))"
+        selector = "tr:has(td.zentriert:has-text('25/26')), tr:has(td.zentriert:has-text('2025')), tr:has(td.zentriert:has-text('2026'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -262,7 +262,7 @@ class ScrapPerformancesDetaillees:
         if position_joueur == "Gardien de but":
             return 0
         else: 
-            selector = "tr:has(td.zentriert:has-text('25/26'))"
+            selector = "tr:has(td.zentriert:has-text('25/26')), tr:has(td.zentriert:has-text('2025')), tr:has(td.zentriert:has-text('2026'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -285,7 +285,7 @@ class ScrapPerformancesDetaillees:
         if position_joueur != "Gardien de but":
             return 0
         else: 
-            selector = "tr:has(td.zentriert:has-text('25/26'))"
+            selector = "tr:has(td.zentriert:has-text('25/26')), tr:has(td.zentriert:has-text('2025')), tr:has(td.zentriert:has-text('2026'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -307,7 +307,7 @@ class ScrapPerformancesDetaillees:
         position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
         if position_joueur == "Gardien de but":
 
-            selector = "tr:has(td.zentriert:has-text('25/26'))"
+            selector = "tr:has(td.zentriert:has-text('25/26')), tr:has(td.zentriert:has-text('2025')), tr:has(td.zentriert:has-text('2026'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -332,7 +332,7 @@ class ScrapPerformancesDetaillees:
         position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
         if position_joueur == "Gardien de but":
 
-            selector = "tr:has(td.zentriert:has-text('25/26'))"
+            selector = "tr:has(td.zentriert:has-text('25/26')), tr:has(td.zentriert:has-text('2025')), tr:has(td.zentriert:has-text('2026'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -352,7 +352,7 @@ class ScrapPerformancesDetaillees:
             return total_minutes_jouees
         
         else:
-            selector = "tr:has(td.zentriert:has-text('25/26'))"
+            selector = selector = "tr:has(td.zentriert:has-text('25/26')), tr:has(td.zentriert:has-text('2025')), tr:has(td.zentriert:has-text('2026'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -375,7 +375,7 @@ class ScrapPerformancesDetaillees:
 
     @staticmethod
     def scrap_nombre_matchs_24_25(page: Page) -> int:
-        selector = "tr:has(td.zentriert:has-text('24/25'))"
+        selector = "tr:has(td.zentriert:has-text('24/25')), tr:has(td.zentriert:has-text('2024')), tr:has(td.zentriert:has-text('2025'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -401,7 +401,7 @@ class ScrapPerformancesDetaillees:
         else:
             td_selector = "td:nth-of-type(11)"
         
-        selector = "tr:has(td.zentriert:has-text('24/25'))"
+        selector = "tr:has(td.zentriert:has-text('24/25')), tr:has(td.zentriert:has-text('2024')), tr:has(td.zentriert:has-text('2025'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -427,7 +427,7 @@ class ScrapPerformancesDetaillees:
         else:
             td_selector_entrees = "td:nth-of-type(11)"
         
-        selector = "tr:has(td.zentriert:has-text('24/25'))"
+        selector = "tr:has(td.zentriert:has-text('24/25')), tr:has(td.zentriert:has-text('2024')), tr:has(td.zentriert:has-text('2025'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -456,7 +456,7 @@ class ScrapPerformancesDetaillees:
 
     @staticmethod
     def scrap_nombre_buts_24_25(page: Page) -> int:
-        selector = "tr:has(td.zentriert:has-text('24/25'))"
+        selector = "tr:has(td.zentriert:has-text('24/25')), tr:has(td.zentriert:has-text('2024')), tr:has(td.zentriert:has-text('2025'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -475,30 +475,11 @@ class ScrapPerformancesDetaillees:
     
     @staticmethod
     def scrap_nombre_passes_d_24_25(page: Page) -> int:
-        selector = "tr:has(td.zentriert:has-text('24/25'))"
-        lignes = page.locator(selector)
-        if lignes.count() == 0:
-            return 0  
-        
-        total_passes_d = 0 
-        for i in range(lignes.count()):
-            cellules = lignes.nth(i).locator("td:nth-of-type(9)")
-            if cellules.count() > 0: 
-                try:
-                    nombre_passes_d = int(cellules.first.inner_text().strip())
-                    total_passes_d += nombre_passes_d
-                except ValueError:
-                    continue 
-        
-        return total_passes_d
-    
-    @staticmethod
-    def scrap_nombre_passes_d_24_25(page: Page) -> int:
         position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
         if position_joueur == "Gardien de but":
             return 0
         
-        selector = "tr:has(td.zentriert:has-text('24/25'))"
+        selector = "tr:has(td.zentriert:has-text('24/25')), tr:has(td.zentriert:has-text('2024')), tr:has(td.zentriert:has-text('2025'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -521,7 +502,7 @@ class ScrapPerformancesDetaillees:
         if position_joueur == "Gardien de but":
             return 0
         else: 
-            selector = "tr:has(td.zentriert:has-text('24/25'))"
+            selector = "tr:has(td.zentriert:has-text('24/25')), tr:has(td.zentriert:has-text('2024')), tr:has(td.zentriert:has-text('2025'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -544,7 +525,7 @@ class ScrapPerformancesDetaillees:
         if position_joueur != "Gardien de but":
             return 0
         else: 
-            selector = "tr:has(td.zentriert:has-text('24/25'))"
+            selector = "tr:has(td.zentriert:has-text('24/25')), tr:has(td.zentriert:has-text('2024')), tr:has(td.zentriert:has-text('2025'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -566,7 +547,7 @@ class ScrapPerformancesDetaillees:
         position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
         if position_joueur == "Gardien de but":
 
-            selector = "tr:has(td.zentriert:has-text('24/25'))"
+            selector = "tr:has(td.zentriert:has-text('24/25')), tr:has(td.zentriert:has-text('2024')), tr:has(td.zentriert:has-text('2025'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -591,7 +572,7 @@ class ScrapPerformancesDetaillees:
         position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
         if position_joueur == "Gardien de but":
 
-            selector = "tr:has(td.zentriert:has-text('24/25'))"
+            selector = "tr:has(td.zentriert:has-text('24/25')), tr:has(td.zentriert:has-text('2024')), tr:has(td.zentriert:has-text('2025'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -611,7 +592,7 @@ class ScrapPerformancesDetaillees:
             return total_minutes_jouees
         
         else:
-            selector = "tr:has(td.zentriert:has-text('24/25'))"
+            selector = "tr:has(td.zentriert:has-text('24/25')), tr:has(td.zentriert:has-text('2024')), tr:has(td.zentriert:has-text('2025'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -634,7 +615,7 @@ class ScrapPerformancesDetaillees:
 
     @staticmethod
     def scrap_nombre_matchs_23_24(page: Page) -> int:
-        selector = "tr:has(td.zentriert:has-text('23/24'))"
+        selector = "tr:has(td.zentriert:has-text('23/24')), tr:has(td.zentriert:has-text('2023')), tr:has(td.zentriert:has-text('2024'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -660,7 +641,7 @@ class ScrapPerformancesDetaillees:
         else:
             td_selector = "td:nth-of-type(11)"
         
-        selector = "tr:has(td.zentriert:has-text('23/24'))"
+        selector = "tr:has(td.zentriert:has-text('23/24')), tr:has(td.zentriert:has-text('2023')), tr:has(td.zentriert:has-text('2024'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -686,7 +667,7 @@ class ScrapPerformancesDetaillees:
         else:
             td_selector_entrees = "td:nth-of-type(11)"
         
-        selector = "tr:has(td.zentriert:has-text('23/24'))"
+        selector = "tr:has(td.zentriert:has-text('23/24')), tr:has(td.zentriert:has-text('2023')), tr:has(td.zentriert:has-text('2024'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -715,7 +696,7 @@ class ScrapPerformancesDetaillees:
 
     @staticmethod
     def scrap_nombre_buts_23_24(page: Page) -> int:
-        selector = "tr:has(td.zentriert:has-text('23/24'))"
+        selector = "tr:has(td.zentriert:has-text('23/24')), tr:has(td.zentriert:has-text('2023')), tr:has(td.zentriert:has-text('2024'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -734,7 +715,7 @@ class ScrapPerformancesDetaillees:
 
     @staticmethod
     def scrap_nombre_passes_d_23_24(page: Page) -> int:
-        selector = "tr:has(td.zentriert:has-text('23/24'))"
+        selector = "tr:has(td.zentriert:has-text('23/24')), tr:has(td.zentriert:has-text('2023')), tr:has(td.zentriert:has-text('2024'))"
         lignes = page.locator(selector)
         if lignes.count() == 0:
             return 0  
@@ -757,7 +738,7 @@ class ScrapPerformancesDetaillees:
         if position_joueur == "Gardien de but":
             return 0
         else: 
-            selector = "tr:has(td.zentriert:has-text('23/24'))"
+            selector = "tr:has(td.zentriert:has-text('23/24')), tr:has(td.zentriert:has-text('2023')), tr:has(td.zentriert:has-text('2024'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -780,7 +761,7 @@ class ScrapPerformancesDetaillees:
         if position_joueur != "Gardien de but":
             return 0
         else: 
-            selector = "tr:has(td.zentriert:has-text('23/24'))"
+            selector = "tr:has(td.zentriert:has-text('23/24')), tr:has(td.zentriert:has-text('2023')), tr:has(td.zentriert:has-text('2024'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -802,7 +783,7 @@ class ScrapPerformancesDetaillees:
         position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
         if position_joueur == "Gardien de but":
 
-            selector = "tr:has(td.zentriert:has-text('23/24'))"
+            selector = "tr:has(td.zentriert:has-text('23/24')), tr:has(td.zentriert:has-text('2023')), tr:has(td.zentriert:has-text('2024'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -827,7 +808,7 @@ class ScrapPerformancesDetaillees:
         position_joueur = page.locator("li.data-header__label:has-text('Position:') > span.data-header__content").inner_text().strip()
         if position_joueur == "Gardien de but":
 
-            selector = "tr:has(td.zentriert:has-text('23/24'))"
+            selector = "tr:has(td.zentriert:has-text('23/24')), tr:has(td.zentriert:has-text('2023')), tr:has(td.zentriert:has-text('2024'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  
@@ -847,7 +828,7 @@ class ScrapPerformancesDetaillees:
             return total_minutes_jouees
         
         else:
-            selector = "tr:has(td.zentriert:has-text('23/24'))"
+            selector = "tr:has(td.zentriert:has-text('23/24')), tr:has(td.zentriert:has-text('2023')), tr:has(td.zentriert:has-text('2024'))"
             lignes = page.locator(selector)
             if lignes.count() == 0:
                 return 0  

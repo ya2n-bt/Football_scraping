@@ -11,6 +11,7 @@ import time
 import random
 
 # --- FONCTIONS DE NAVIGATION (Identiques) ---
+
 def goto_profil_page(page, base_url):
     profil_url = base_url.replace("leistungsdatendetails", "profil")
     page.goto(profil_url, wait_until="domcontentloaded", timeout=60000)
@@ -154,7 +155,7 @@ def scraper_club(page, url_club):
 
 # --- FONCTION PRINCIPALE : LIGUE 1 ---
 def run_ligue_1():
-    URL_LIGUE = "https://www.transfermarkt.fr/premier-league/startseite/wettbewerb/GB1"
+    URL_LIGUE = "https://www.transfermarkt.fr/bundesliga/startseite/wettbewerb/L1"
     
     data_globale = []
     
@@ -215,7 +216,7 @@ def run_ligue_1():
 if __name__ == "__main__":
     data_finale = run_ligue_1()
 
-    output_file = "pl_complet.json"
+    output_file = "Bundes.json"
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(data_finale, f, indent=4, ensure_ascii=False)
 
