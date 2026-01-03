@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "datetime>=5.5",
     "playwright>=1.55.0",
+    "streamlit>=1.52.2",
 ]
 
 [project.scripts]
