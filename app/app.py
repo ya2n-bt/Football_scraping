@@ -89,44 +89,86 @@ if choix_page == "📊 Profil Joueur":
             
         st.info(f"**Valeur marchande**\n\n{valeur_txt}")
 
-    st.markdown("### 📋 Détails supplémentaires") 
+    st.markdown("---")
+    col_gauche_fixe, col_droite_dyn = st.columns([1, 2])
     
-    config_affichage = {
-        'taille': 'Taille',
-        'pied': 'Pied fort',
-        'selections_inter': 'Nombre de sélections internationales',
-        'nb_trophees_3ans': 'Nombre de trophées ces 3 dernières années',
-        'fin_contrat': 'Nombre de jours avant fin de contrat',
-        'nb_blessures_3ans': 'Nombre de blessures ces 3 dernières années',
-        'matchs_manques_3ans': "Nombre d'abscences ces 3 dernières années"
-    } 
-    donnees_tableau = {}
-    
-    for col_technique, nom_joli in config_affichage.items():
-        if col_technique in df.columns:
-            valeur = joueur_data[col_technique]
-            
-            if pd.notna(valeur) and isinstance(valeur, (int, float)):
-    
-                if col_technique == 'taille':
-                    valeur = f"{valeur:.2f}"
-
-                else:
-                    valeur = f"{valeur:,.0f}".replace(',', ' ')
-            
-            elif pd.isna(valeur):
-                valeur = "-"
+    with col_gauche_fixe:
+        st.subheader("🆔 Infos Générales")
+        
+        config_affichage = {
+            'taille': '📏 Taille',
+            'pied': '🦶 Pied fort',
+            'selections_inter': '🌍 Sélections Internationales',
+            'nb_trophees_3ans': '🏆 Trophées (3 dernières années)',
+            'fin_contrat': '📅 Jours avant fin de contrat',
+            'nb_blessures_3ans': '🚑 Blessures (3 dernières années)',
+            'matchs_manques_3ans': "❌ Matchs manqués (3 ans)"
+        } 
+        donnees_tableau = {}
+        
+        for col_technique, nom_joli in config_affichage.items():
+            if col_technique in df.columns:
+                valeur = joueur_data[col_technique]
                 
-            donnees_tableau[nom_joli] = valeur
+                if pd.notna(valeur) and isinstance(valeur, (int, float)):
+                    
+                    if col_technique == 'taille':
+                        valeur = f"{valeur:.2f} m"
+                    else:
+                        valeur = f"{valeur:,.0f}".replace(',', ' ')
+                
+                elif pd.isna(valeur):
+                    valeur = "-"
+                    
+                donnees_tableau[nom_joli] = valeur
 
-    df_affichage = pd.DataFrame(donnees_tableau.items(), columns=['Indicateur', 'Valeur'])
-    
-    st.dataframe(
-        df_affichage, 
-        hide_index=True, 
-        use_container_width=True
-    )
+        df_affichage = pd.DataFrame(donnees_tableau.items(), columns=['Indicateur', 'Valeur'])
+        
+        st.dataframe(
+            df_affichage, 
+            hide_index=True, 
+            use_container_width=True
+        )
 
+    with col_droite_dyn:
+        st.subheader("📈 Performances par Saison")
+        
+        saison_choisie = st.radio(
+            "Choisir la saison :",
+            ["2023-2024", "2024-2025", "2025-2026"],
+            horizontal=True
+        )
+        
+        if saison_choisie == "2023-2024":
+            suffixe = "_23_24"
+        elif saison_choisie == "2024-2025":
+            suffixe = "_24_25"
+        else: 
+            suffixe = "_25_26"
+
+        config_saison = {
+            f'minutes{suffixe}': '⏱️ Minutes jouées',
+            f'matchs{suffixe}': '👕 Matchs joués',
+            f'buts{suffixe}': '⚽ Buts',
+            f'passes_d{suffixe}': '🎯 Passes décisives',
+        }
+        
+        data_saison = {}
+        
+        for col_tech, nom_joli in config_saison.items():
+            if col_tech in df.columns:
+                val = joueur_data[col_tech]
+                
+                if pd.notna(val) and isinstance(val, (int, float)):
+                    val = f"{val:,.0f}".replace(',', ' ')
+                elif pd.isna(val):
+                    val = "-"
+                data_saison[nom_joli] = val
+            else:
+                data_saison[nom_joli] = "Donnée non dispo"
+
+        df_saison = pd.DataFrame(data_saison.items(), columns=['Statistique', 'Valeur'])
+        st.dataframe(df_saison, hide_index=True, use_container_width=True)
 
 
 # --- PAGE 2 : ANALYSE ---
