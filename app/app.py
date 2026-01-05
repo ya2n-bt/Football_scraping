@@ -56,7 +56,7 @@ if choix_page == "📊 Profil Joueur":
         key="mode_p1" 
     )
 
-    joueur_data = None # On initialise la variable
+    joueur_data = None 
 
     # --- OPTION A : PAR FILTRES ---
     if mode_recherche == "📂 Recherche par Filtres":
@@ -169,11 +169,11 @@ if choix_page == "📊 Profil Joueur":
             
         st.info(f"**Valeur marchande**\n\n{valeur_txt}")
 
-    # --- DEUX COLONNES D'INFOS ---
+    # --- TROIS COLONNES D'INFOS ---
 
     st.markdown("---")
 
-    col_gauche_fixe, col_droite_dyn = st.columns([1, 2])
+    col_gauche_fixe, col_droite_dyn, spider_graph = st.columns([1.8, 1.5, 2.1])
     
     with col_gauche_fixe:
         st.subheader("📊 Infos Générales")
@@ -236,9 +236,9 @@ if choix_page == "📊 Profil Joueur":
         if "Gardien" in str(position_joueur):
             config_saison = {
                 f'minutes{suffixe}': '⏱️ Minutes jouées',
-                f'matchs{suffixe}': '🏟️ Matchs joués', # On met le maillot ici pour le total
-                f'titularisations{suffixe}': '👕 Titularisations', # Le 11 de départ
-                f'entrees{suffixe}': '🔄 Entrées en jeu',         # Le remplacement
+                f'matchs{suffixe}': '🏟️ Matchs joués', 
+                f'titularisations{suffixe}': '👕 Titularisations', 
+                f'entrees{suffixe}': '🔄 Entrées en jeu',         
                 f'buts_encaisses{suffixe}': '🥅 Buts encaissés',
                 f'clean_sheets{suffixe}': '🧤 Clean Sheets'
             }
@@ -270,9 +270,69 @@ if choix_page == "📊 Profil Joueur":
 
         df_saison = pd.DataFrame(data_saison.items(), columns=['Statistique', 'Valeur'])
         st.dataframe(df_saison, hide_index=True, use_container_width=True)
+    
+    with spider_graph:
+        st.subheader(
+            "🕸️ Positionnement",
+            help = "L'échelle (0-100) compare le joueur au **meilleur profil** de la base de données. \n Les données de référence se basent sur la saison complète 2024-2025."
+        )
+
+        if "Gardien" in str(joueur_data['position']):
+            categories = ['Minutes', 'Clean Sheets', 'Titularisations', 'Matchs Joués', 'Âge (Jeunesse)']
+            cols_ref   = ['minutes_24_25', 'clean_sheets_24_25', 'titularisations_24_25', 'matchs_24_25', 'age']
+        else:
+            categories = ['Efficacité (Buts)', 'Altruisme (Passes D)', 'Temps de jeu', 'Expérience (Matchs)', 'Titularisations']
+            cols_ref   = ['buts_24_25', 'passes_d_24_25', 'minutes_24_25', 'matchs_24_25', 'titularisations_24_25']
+
+        # --- CALCUL DES SCORES NORMALISÉS ---
+
+        values = []
+        
+        for col in cols_ref:
+            valeur_joueur = joueur_data[col]
+            max_base = df[col].max()
+            
+            if col == 'age':
+                score = (valeur_joueur / max_base) * 100
+            else:
+                if max_base > 0:
+                    score = (valeur_joueur / max_base) * 100
+                else:
+                    score = 0
+            
+            values.append(score)
+
+        values += values[:1]
+        categories += categories[:1]
+
+        # --- CRÉATION DU GRAPHIQUE ---
+        fig_radar = go.Figure()
+
+        fig_radar.add_trace(go.Scatterpolar(
+            r=values,
+            theta=categories,
+            fill='toself',
+            name=joueur_data['nom'],
+            line_color='#1D428A',
+            fillcolor='rgba(29, 66, 138, 0.4)' 
+        ))
+
+        fig_radar.update_layout(
+            polar=dict(
+                radialaxis=dict(
+                    visible=True,
+                    range=[0, 100],
+                    showticklabels=False
+            )),
+            showlegend=False,
+            margin=dict(l=40, r=40, t=40, b=40),
+            height = 390
+        )
+
+        st.plotly_chart(fig_radar, use_container_width=True)
 
 
-# --- PAGE 2 : ESTIMATION VALEUR ---
+# --- PAGE 2 : ESTIMATION VALEUR RÉELLE ---
 
 elif choix_page == "🔎 Estimation valeur réelle":
     st.header("Valeur : Réel vs Estimée")
@@ -393,9 +453,11 @@ elif choix_page == "🔎 Estimation valeur réelle":
 
     st.markdown("---")
 
-    # --- VALEUR RÉELLE VS ESTIMÉE ---
+    # --- VERDICT FINANCIER ---
 
     st.subheader(f"💰 Verdict Financier : {joueur['nom']}")
+
+     # --- TROIS BOÎTES D'INFOS ---
 
     col_reel, col_ia, col_verdict = st.columns(3)
 
@@ -490,6 +552,8 @@ elif choix_page == "🔎 Estimation valeur réelle":
 
     st.markdown("---")
 
+     # --- PERFORMANCE DU MODÈLE ---
+
     st.subheader("📊 Performance du prédicteur & Philosophie du Modèle")
 
     df_perf = df.dropna(subset=['valeur', 'valeur_estimee'])
@@ -505,7 +569,7 @@ elif choix_page == "🔎 Estimation valeur réelle":
         with kpi1:
             st.metric(
                 label="Précision (R²)", 
-                value=f"{r2:.2%}", # Affiche en % (ex: 89.4%)
+                value=f"{r2:.2%}", 
                 help="Proche de 100% = Le modèle colle parfaitement aux prix du marché."
             )
         
@@ -535,6 +599,8 @@ elif choix_page == "🔎 Estimation valeur réelle":
 
         st.markdown("---")
 
+         # --- GRAPHIQUE SUR/SOUS CÔTÉ ---
+
         st.write("### 🎯 Analyse Visuelle : Marché vs Prédicteur")
         st.caption("Si un point est sur la ligne rouge, le modèle a trouvé exactement le bon prix. S'il est au-dessus, le modèle pense qu'il vaut plus cher (Sous-coté).")
         
@@ -563,6 +629,9 @@ elif choix_page == "🔎 Estimation valeur réelle":
         st.warning("⚠️ Erreur : Pas assez de données pour évaluer les performances du modèle.")
 
     st.markdown("---")
+
+     # --- TOP 10 VARIABLES IMPORTANTES ---
+
     st.subheader("Features importantes du modèle")
 
     best_model = joblib.load(chemin_modele)
