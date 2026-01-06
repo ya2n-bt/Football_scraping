@@ -700,8 +700,101 @@ elif choix_page == "🔎 Estimation valeur réelle":
     
 # --- PAGE 3 : PÉPITES ---
 elif choix_page == "💎 Pépites":
-    st.header("Chasse aux Pépites (Moneyball)")
-    st.info("Ici on affichera le Top 10 des joueurs sous-cotés et le Scatter Plot.")
+        st.header("Détection des joueurs les plus sous-côtés")
+
+        # --- AJOUT DU POTENTIEL DANS LE DF ---
+
+        df_potentiel = df.copy()
+        
+        df_potentiel = df_potentiel.dropna(subset=['valeur', 'valeur_estimee'])
+        
+        df_potentiel['plus_value'] = df_potentiel['valeur_estimee'] - df_potentiel['valeur']
+        
+        df_potentiel['renta'] = (df_potentiel['plus_value'] / df_potentiel['valeur']) * 100
+
+        # --- FILTRES ---
+
+        st.markdown("### 🔍 Critères de recherche")
+        
+        col_filtre_1, col_filtre_2, col_filtre_3 = st.columns(3)
+        
+        with col_filtre_1:
+            mode_ligue = st.radio("Périmètre :", ["5 Grands Championnats", "Par Ligue"], horizontal=True)
+            
+            ligue_selected = None
+            if mode_ligue == "Par Ligue":
+                toutes_les_ligues = df_potentiel['ligue'].unique()
+                top_5_target = ['Premier League', 'LaLiga', 'Bundesliga', 'Serie A', 'Ligue 1']
+                top_5_present = [ligue for ligue in top_5_target if ligue in toutes_les_ligues]
+                autres_ligues = sorted([ligue for ligue in toutes_les_ligues if ligue not in top_5_target])
+                ligues_dispo = top_5_present + autres_ligues
+                
+                ligue_selected = st.selectbox("Choisir le championnat :", ligues_dispo)
+
+        with col_filtre_2:
+            age_min, age_max = st.slider("Tranche d'âge :", 15, 40, (16, 25))
+
+        with col_filtre_3:
+            budget_max = st.number_input("Budget Max (€)", value=200000000, step=10000000)
+
+        # --- APPLICATION DES FILTRES ---
+        df_filtre = df_potentiel[df_potentiel['plus_value'] > 0]
+        
+        if mode_ligue == "Par Ligue" and ligue_selected:
+            df_filtre = df_filtre[df_filtre['ligue'] == ligue_selected]
+            
+        df_filtre = df_filtre[
+            (df_filtre['age'] >= age_min) & 
+            (df_filtre['age'] <= age_max) &
+            (df_filtre['valeur'] <= budget_max)
+        ]
+
+        # 4. --- AFFICHAGE TOP 20 ---
+
+        top_20 = df_filtre.sort_values(by='plus_value', ascending=False).head(20)
+        
+        tableau_final = top_20[[
+            'nom', 'age', 'club', 'ligue', 'position', 
+            'valeur', 'valeur_estimee', 'plus_value', 'renta'
+        ]]
+
+        st.markdown(f"### 🎯 Top 20 des joueurs sous-côtés ")
+        
+        max_val = top_20['plus_value'].max() if len(top_20) > 0 else 100 # Sécurité pour la barre de progression (éviter crash si liste vide)
+
+        st.dataframe(
+            tableau_final,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "nom": "Joueur",
+                "age": "Age",
+                "club": "Club actuel",
+                "valeur": st.column_config.NumberColumn(
+                    "Prix Marché",
+                    format="%.0f €"
+                ),
+                "valeur_estimee": st.column_config.NumberColumn(
+                    "Valeur Modèle",
+                    format="%.0f €",
+                    help="Prix que le joueur 'devrait' coûter selon ses stats"
+                ),
+                "plus_value": st.column_config.ProgressColumn(
+                    "Gain Potentiel (€)",
+                    format="%.0f €",
+                    min_value=0,
+                    max_value=max_val,
+                    help="Différence brute entre le prix réel et l'estimation du modèle"
+                ),
+                "renta": st.column_config.NumberColumn(
+                    "Rentabilité",
+                    format="%.1f %%",
+                    help="Retour sur investissement théorique"
+                )
+            }
+        )
+        
+        st.info("💡 **Remarque :** Les joueurs avec une forte plus-value sont souvent des éléments performants évoluant dans des ligues et/ou clubs moins médiatisées. Ce sont des bonnes cibles pour les recruteurs.")
 
 # --- PAGE 4 : SIMULATEUR ---
 elif choix_page == "🔮 Simulateur":
