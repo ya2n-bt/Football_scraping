@@ -10,7 +10,7 @@ import plotly.express as px
 # --- CONFIGURATION DE LA PAGE ---
 
 st.set_page_config(
-    page_title="Football Moneyball ⚽",
+    page_title="Mercato Analytics ⚽",
     page_icon="⚽",
     layout="wide"
 )
@@ -35,23 +35,178 @@ df = load_data()
 if df is None:
     st.stop()
 
+@st.cache_resource
+def load_modele():
+    if os.path.exists(chemin_modele):
+        return joblib.load(chemin_modele)
+    else:
+        return None
+
+best_model = load_modele()
+
 # --- CRÉATION DE LA BARRE LATÉRALE ---
 
-st.sidebar.title("⚽ Outil d'analyse footballistique")
+with st.sidebar:
+        st.markdown("""
+            <style>
+            .nav-title {
+                color: white !important;
+                font-size: 38px !important;
+                font-weight: 800 !important;
+                text-align: center !important;
+                margin-bottom: 25px !important;
+            }
 
-pages = ["📊 Profil Joueur", "🔎 Estimation valeur réelle", "💎 Pépites", "🔮 Simulateur", "ℹ️ À Propos"]
-choix_page = st.sidebar.radio("Menu", pages)
+            [data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
+                display: none !important;
+            }
 
-st.sidebar.markdown("---")
+            [data-testid="stSidebar"] [role="radiogroup"] {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 12px !important;
+            }
+
+            [data-testid="stSidebar"] [role="radiogroup"] label {
+                background-color: #3867d6 !important;
+                border-radius: 30px !important;
+                padding: 12px 0px !important; 
+                width: 85% !important; 
+                
+                display: flex !important;
+                align-items: center !important;     
+                justify-content: center !important; 
+                
+                cursor: pointer !important;
+                transition: all 0.3s ease !important;
+                border: none !important;
+            }
+
+            [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
+                display: none !important;
+            }
+
+            [data-testid="stSidebar"] [role="radiogroup"] label div[data-testid="stMarkdownContainer"] {
+                width: 100% !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+
+            [data-testid="stSidebar"] [role="radiogroup"] label p {
+                color: white !important;
+                font-size: 17px !important;
+                font-weight: 700 !important;
+                
+                margin: 0 !important;     
+                padding: 0 !important;
+                width: 100% !important;
+                text-align: center !important;
+                
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                line-height: 1 !important;
+            }
+
+            [data-testid="stSidebar"] [role="radiogroup"] label:hover {
+                background-color: #4b7bec !important;
+                transform: scale(1.05) !important;
+            }
+
+            [data-testid="stSidebar"] [role="radiogroup"] div[aria-checked="true"] label {
+                background-color: #1e3799 !important;
+                border: 2px solid white !important;
+            }
+            </style>
+            
+            <p class="nav-title">Navigation</p>
+        """, unsafe_allow_html=True)
+
+        options_nav = ["🏠 Accueil", "👤 Profil Joueur", "💰 Estimation Valeur Réelle", "💎 Pépites", "🔮 Simulateur", "ℹ️ À propos"]
+        choix_page = st.radio("", options_nav, key="navigation")
+
 st.sidebar.info(f"Nombre de joueur dans la base de donnée : {len(df)}")
 st.title(f"{choix_page}")
 
+# --- PAGE 0 : ACCUEIL ---
+if choix_page == "🏠 Accueil":
+        
+        def changer_page(nom_page):
+            st.session_state.navigation = nom_page
+
+        st.markdown("""
+            <style>
+            .main-title {
+                color: #3867d6; 
+                font-size: 3rem;
+                font-weight: 800;
+                margin-bottom: 0px;
+            }
+            .subtitle {
+                color: #808495;
+                font-size: 1.2rem;
+                margin-bottom: 30px;
+            }
+            .feature-header {
+                color: #4b7bec;
+                font-weight: bold;
+                font-size: 1.4rem;
+                border-left: 5px solid #3867d6;
+                padding-left: 15px;
+                margin-bottom: 15px;
+            }
+            div[data-testid="stContainer"] {
+                border-color: #3867d6 !important; 
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
+        st.markdown('<p class="main-title">Bienvenue sur Mercato Analytics !</p>', unsafe_allow_html=True)
+        
+        st.write("""
+            Rationalisez vos décisions grâce à la puissance du Machine Learning. 
+            Notre plateforme transforme les statistiques brutes en **indicateurs de valeur concrets** pour optimiser votre stratégie de recrutement.
+            """)
+
+        st.markdown("---")
+
+        col_home_1, col_home_2 = st.columns(2)
+
+        with col_home_1:
+            with st.container(border=True):
+                st.markdown('<p class="feature-header">Data Visualization 📊</p>', unsafe_allow_html=True)
+                st.write("Explorez les performances et statistiques des joueurs des 5 grands championnats.")
+                st.button("Explorer les Profils ➔", on_click=changer_page, args=["👤 Profil Joueur"], key="btn_p1", use_container_width=True)
+
+        with col_home_2:
+            with st.container(border=True):
+                st.markdown('<p class="feature-header">Estimation de la valeur sportive 💰</p>', unsafe_allow_html=True)
+                st.write("Déterminez la 'Juste Valeur' sportive d'un joueur, débarrassée des biais et de la hype médiatique.")
+                st.button("Estimer une Valeur ➔", on_click=changer_page, args=["💰 Estimation & Juste Prix"], key="btn_p2", use_container_width=True)
+
+        st.write("") 
+
+        with col_home_1:
+            with st.container(border=True):
+                st.markdown('<p class="feature-header">Chasse aux Pépites 💎</p>', unsafe_allow_html=True)
+                st.write("Identifiez les anomalies de marché. Trouvez les joueurs dont la valeur de notre modèle dépasse le prix réel.")
+                st.button("Détecter des Pépites ➔", on_click=changer_page, args=["💎 Pépites"], key="btn_p3", use_container_width=True)
+
+        with col_home_2:
+            with st.container(border=True):
+                st.markdown('<p class="feature-header">Simulateur 🔮</p>', unsafe_allow_html=True)
+                st.write("Anticipez l'avenir. Modifiez les stats et voyez l'impact direct sur la valorisation marchande.")
+                st.button("Lancer la Simulation ➔", on_click=changer_page, args=["🔮 Simulateur"], key="btn_p4", use_container_width=True)
+
+
 # --- PAGE 1 : PROFIL JOUEUR ---
-if choix_page == "📊 Profil Joueur":
-    st.header("Visualisation :")
+if choix_page == "👤 Profil Joueur":
+    st.header("Visualisation")
     mode_recherche = st.radio(
         "Méthode de recherche :",
-        ["📂 Recherche par Filtres", "🔍 Recherche par Nom"],
+        ["Recherche par Filtres", "Recherche par Nom"],
         horizontal=True,
         key="mode_p1" 
     )
@@ -59,7 +214,7 @@ if choix_page == "📊 Profil Joueur":
     joueur_data = None 
 
     # --- OPTION A : PAR FILTRES ---
-    if mode_recherche == "📂 Recherche par Filtres":
+    if mode_recherche == "Recherche par Filtres":
         col_ligue, col_club, col_joueur = st.columns(3)
 
         # LIGUE
@@ -125,7 +280,7 @@ if choix_page == "📊 Profil Joueur":
         liste_complete = sorted(df['label_recherche'].unique())
         
         choix_recherche = st.selectbox(
-            "🔎 Saisir le nom du joueur", 
+            "Saisir le nom du joueur", 
             liste_complete, 
             key="search_p1",
             index=None, 
@@ -173,7 +328,7 @@ if choix_page == "📊 Profil Joueur":
 
     st.markdown("---")
 
-    col_gauche_fixe, col_droite_dyn, spider_graph = st.columns([1.8, 1.5, 2.1])
+    col_gauche_fixe, col_droite_dyn = st.columns(2)
     
     with col_gauche_fixe:
         st.subheader("📊 Infos Générales")
@@ -194,26 +349,17 @@ if choix_page == "📊 Profil Joueur":
         for col_technique, nom_joli in config_affichage.items():
             if col_technique in df.columns:
                 valeur = joueur_data[col_technique]
-                
                 if pd.notna(valeur) and isinstance(valeur, (int, float)):
-                    
                     if col_technique == 'taille':
                         valeur = f"{valeur:.2f} m"
                     else:
                         valeur = f"{valeur:,.0f}".replace(',', ' ')
-                
                 elif pd.isna(valeur):
                     valeur = "-"
-                    
                 donnees_tableau[nom_joli] = valeur
 
         df_affichage = pd.DataFrame(donnees_tableau.items(), columns=['Statistique', 'Valeur'])
-        
-        st.dataframe(
-            df_affichage, 
-            hide_index=True, 
-            use_container_width=True
-        )
+        st.dataframe(df_affichage, hide_index=True, use_container_width=True)
 
     with col_droite_dyn:
         st.subheader("📈 Performances par Saison")
@@ -221,7 +367,8 @@ if choix_page == "📊 Profil Joueur":
         saison_choisie = st.radio(
             "Choisir la saison :",
             ["2023-2024", "2024-2025", "2025-2026"],
-            horizontal=True
+            horizontal=True,
+            key="saison_selector" 
         )
         
         if saison_choisie == "2023-2024":
@@ -242,7 +389,6 @@ if choix_page == "📊 Profil Joueur":
                 f'buts_encaisses{suffixe}': '🥅 Buts encaissés',
                 f'clean_sheets{suffixe}': '🧤 Clean Sheets'
             }
-        
         else:
             config_saison = {
                 f'minutes{suffixe}': '⏱️ Minutes jouées',
@@ -255,11 +401,9 @@ if choix_page == "📊 Profil Joueur":
             }
         
         data_saison = {}
-        
         for col_tech, nom_joli in config_saison.items():
             if col_tech in df.columns:
                 val = joueur_data[col_tech]
-                
                 if pd.notna(val) and isinstance(val, (int, float)):
                     val = f"{val:,.0f}".replace(',', ' ')
                 elif pd.isna(val):
@@ -270,49 +414,44 @@ if choix_page == "📊 Profil Joueur":
 
         df_saison = pd.DataFrame(data_saison.items(), columns=['Statistique', 'Valeur'])
         st.dataframe(df_saison, hide_index=True, use_container_width=True)
-    
-    with spider_graph:
-        st.subheader(
-            "🕸️ Positionnement",
-            help = "L'échelle (0-100) compare le joueur au **meilleur profil** de la base de données. \n Les données de référence se basent sur la saison complète 2024-2025."
-        )
 
+    # --- LE SPIDER GRAPH ---  
+    st.write("---")
+    _, col_spider, _ = st.columns([0.2, 1, 0.2])
+    
+    with col_spider:
+        st.subheader("🕸️ Spider-graph")
+        
         if "Gardien" in str(joueur_data['position']):
-            categories = ['Minutes', 'Clean Sheets', 'Titularisations', 'Matchs Joués', 'Âge (Jeunesse)']
+            categories = ['Minutes', 'Clean Sheets', 'Titularisations', 'Matchs Joués', 'Âge']
             cols_ref   = ['minutes_24_25', 'clean_sheets_24_25', 'titularisations_24_25', 'matchs_24_25', 'age']
         else:
-            categories = ['Efficacité (Buts)', 'Altruisme (Passes D)', 'Temps de jeu', 'Expérience (Matchs)', 'Titularisations']
+            categories = ['Buts', 'Passes D', 'Temps de jeu', 'Matchs', 'Titularisations']
             cols_ref   = ['buts_24_25', 'passes_d_24_25', 'minutes_24_25', 'matchs_24_25', 'titularisations_24_25']
 
-        # --- CALCUL DES SCORES NORMALISÉS ---
+        import plotly.graph_objects as go
 
         values = []
-        
         for col in cols_ref:
             valeur_joueur = joueur_data[col]
             max_base = df[col].max()
             
-            if col == 'age':
+            if max_base > 0:
                 score = (valeur_joueur / max_base) * 100
             else:
-                if max_base > 0:
-                    score = (valeur_joueur / max_base) * 100
-                else:
-                    score = 0
-            
+                score = 0
             values.append(score)
 
-        values += values[:1]
-        categories += categories[:1]
+        plot_values = values + [values[0]]
+        plot_categories = categories + [categories[0]]
 
-        # --- CRÉATION DU GRAPHIQUE ---
         fig_radar = go.Figure()
 
         fig_radar.add_trace(go.Scatterpolar(
-            r=values,
-            theta=categories,
+            r=plot_values,
+            theta=plot_categories,
             fill='toself',
-            name=joueur_data['nom'],
+            name=joueur_data.get('nom', 'Joueur'), 
             line_color='#1D428A',
             fillcolor='rgba(29, 66, 138, 0.4)' 
         ))
@@ -326,49 +465,51 @@ if choix_page == "📊 Profil Joueur":
             )),
             showlegend=False,
             margin=dict(l=40, r=40, t=40, b=40),
-            height = 390
+            height=450
         )
 
+
         st.plotly_chart(fig_radar, use_container_width=True)
+        st.caption("Comparaison au meilleur profil de la base (Saison 2024-2025).")
 
 
 # --- PAGE 2 : ESTIMATION VALEUR RÉELLE ---
 
-elif choix_page == "🔎 Estimation valeur réelle":
+elif choix_page == "💰 Estimation Valeur Réelle":
     st.header("Valeur : Réel vs Estimée")
 
-# --- EXPLICATION DU MODELE ---
+    # --- EXPLICATION DU MODELE ---
 
     st.info("""
         **🧠 Comment fonctionne ce prédicteur ?**
         
         Cet outil d'aide au recrutement repose sur un modèle de **Machine Learning (Random Forest)**. 
-        L'objectif est d'éliminer les biais subjectifs (réputation, "hype") pour isoler la **Juste Valeur (Fair Value)** d'un joueur basée sur la data.
+        L'objectif est d'éliminer les biais subjectifs (réputation, "hype") pour isoler la **Juste Valeur** d'un joueur basée sur la data.
         
         Le modèle pondère une quarantaine de variables réparties en trois axes :
-        * 📈 **Performance & Impact :** Buts, passes décisives, minutes jouées ...
-        * 🏥 **Fiabilité & Palmarès :** Historique des blessures, nombre de trophées récents, régularité...
-        * 📝 **Contexte Contractuel :** Durée restante de contrat, âge, ligue, poste...
+        * **Performance & Impact :** Buts, passes décisives, minutes jouées ...
+        * **Fiabilité & Palmarès :** Historique des blessures, nombre de trophées récents, régularité...
+        * **Contexte Contractuel :** Durée restante de contrat, âge, ligue, poste...
         
         **Usage pour les recruteurs :** Détecter les **opportunités d'achat** (joueurs sous-cotés) et optimiser les **ventes** (joueurs sur-cotés par la hype), afin d'appuyer chaque négociation sur une valeur objective.
         """)
 
     st.markdown("---")
 
-# --- Choix du joueur ---
+    # --- Choix du joueur ---
 
     st.subheader("👤 Sélectionner un joueur")
 
     mode_recherche = st.radio(
         "Méthode de recherche :",
-        ["📂 Recherche par Filtres", "🔍 Recherche par Nom"],
+        ["Recherche par Filtres", "Recherche par Nom"],
         horizontal=True
     )
 
     joueur = None 
 
     # --- PAR FILTRES ---
-    if mode_recherche == "📂 Recherche par Filtres":
+    if mode_recherche == "Recherche par Filtres":
         col_ligue, col_club, col_joueur = st.columns(3)
 
         # LIGUE
@@ -434,7 +575,7 @@ elif choix_page == "🔎 Estimation valeur réelle":
         liste_complete = sorted(df['label_recherche'].unique())
         
         choix_recherche = st.selectbox(
-            "🔎 Saisir le nom du joueur", 
+            "Saisir le nom du joueur", 
             liste_complete, 
             index=None, 
             placeholder="Ex: Kylian Mbappé..."
@@ -714,7 +855,7 @@ elif choix_page == "💎 Pépites":
 
         # --- FILTRES ---
 
-        st.markdown("### 🔍 Critères de recherche")
+        st.markdown("### Critères de recherche")
         
         col_filtre_1, col_filtre_2, col_filtre_3 = st.columns(3)
         
@@ -798,10 +939,220 @@ elif choix_page == "💎 Pépites":
 
 # --- PAGE 4 : SIMULATEUR ---
 elif choix_page == "🔮 Simulateur":
-    st.header("Simulateur de Valeur")
-    st.info("Ici on pourra modifier les stats d'un joueur pour voir sa valeur changer.")
+        st.caption("Modifiez les performances pour voir l'impact sur la valeur marchande.")
+
+        # --- SÉLECTION DU JOUEUR ---
+        liste_joueurs = sorted(df['nom'].unique())
+
+        dict_affichage = {}
+        for index, row in df.iterrows():
+            dict_affichage[row['nom']] = f"{row['nom']} ({row['position']} - {row['club']})"
+
+        joueur_simu = st.selectbox(
+            "Sélectionnez un joueur :", 
+            liste_joueurs,
+            format_func=lambda x: dict_affichage.get(x, x)
+        
+        )
+
+        row_original = df[df['nom'] == joueur_simu].iloc[0]
+
+        st.markdown("---")
+
+        # --- INTERFACE DE SIMULATION ---
+        st.subheader("Paramètres de la simulation")
+        
+        col_simu_1, col_simu_2, col_simu_3 = st.columns(3)
+
+        # --- COLONNE 1  ---
+        with col_simu_1:
+            st.markdown("##### 👤 Profil & Contrat")
+            
+            nouvel_age = st.number_input(
+                "Âge", 
+                value=int(row_original['age']), 
+                step=1, 
+                min_value=15, max_value=45
+            )
+            
+            annees_restantes = row_original['fin_contrat'] / 365
+            nouvelle_duree = st.slider(
+                "Années de contrat restantes", 
+                min_value=0.0, max_value=5.0, 
+                value=float(annees_restantes),
+                step=0.5
+            )
+            nouveaux_jours_contrat = nouvelle_duree * 365
+
+        # --- COLONNE 2  ---
+        with col_simu_2:
+            st.markdown("##### ⏱️ Temps de jeu (24/25)")
+            
+            nouveaux_matchs = st.slider(
+                "Matchs joués", 
+                min_value=0, max_value=80, 
+                value=int(row_original['matchs_24_25'])
+            )
+            
+            # --- CORRECTION DU CALCUL DES MINUTES ---
+            minutes_actuelles = row_original['minutes_24_25']
+            matchs_actuels = row_original['matchs_24_25']
+            
+            if matchs_actuels > 0 and minutes_actuelles > 0:
+                ratio_min_match = minutes_actuelles / matchs_actuels
+            else:
+                ratio_min_match = 90 
+            
+            if ratio_min_match > 100: 
+                ratio_min_match = 90
+            
+            nouvelles_minutes = nouveaux_matchs * ratio_min_match
+            
+            st.caption(f"Minutes estimées : **{nouvelles_minutes:,.0f}**")
+
+        # --- COLONNE 3 ---
+        with col_simu_3:
+            st.markdown("##### 🏆 Stats & Palmarès")
+            
+            nouveaux_trophees = st.number_input(
+                "Trophées (3 dernières années)",
+                min_value=0,
+                value=int(row_original['nb_trophees_3ans']),
+                step=1
+            )
+            
+            est_gardien = "Gardien" in str(row_original['position'])
+            
+            if est_gardien:
+                nouveaux_clean_sheets = st.number_input(
+                    "Clean Sheets", 
+                    min_value=0, max_value=nouveaux_matchs,
+                    value=int(row_original['clean_sheets_24_25'])
+                )
+                nouveaux_buts_encaisses = st.number_input(
+                    "Buts Encaissés", min_value=0,
+                    value=int(row_original['buts_encaisses_24_25'])
+                )
+                nouveaux_buts = 0
+                nouvelles_passes = 0
+            else:
+                nouveaux_buts = st.number_input(
+                    "Buts marqués", min_value=0, 
+                    value=int(row_original['buts_24_25'])
+                )
+                nouvelles_passes = st.number_input(
+                    "Passes décisives", min_value=0, 
+                    value=int(row_original['passes_d_24_25'])
+                )
+                nouveaux_clean_sheets = 0
+                nouveaux_buts_encaisses = 0
+
+        df_simule = pd.DataFrame(row_original).T 
+        
+        df_simule['age'] = nouvel_age
+        df_simule['fin_contrat'] = nouveaux_jours_contrat
+        
+        df_simule['matchs_24_25'] = nouveaux_matchs
+        df_simule['minutes_24_25'] = nouvelles_minutes
+        
+        df_simule['nb_trophees_3ans'] = nouveaux_trophees
+        
+        df_simule['buts_24_25'] = nouveaux_buts
+        df_simule['passes_d_24_25'] = nouvelles_passes
+        df_simule['clean_sheets_24_25'] = nouveaux_clean_sheets
+        df_simule['buts_encaisses_24_25'] = nouveaux_buts_encaisses
+
+        try:
+            prix_simule = best_model.predict(df_simule)[0]
+            prix_actuel_ia = row_original['valeur_estimee']
+            
+            delta_prix = prix_simule - prix_actuel_ia
+            variation_percent = (delta_prix / prix_actuel_ia) * 100 if prix_actuel_ia > 0 else 0
+
+            st.markdown("---")
+            st.subheader("Résultat de la simulation")
+
+            col_res_1, col_res_2, col_res_3 = st.columns(3)
+            
+            with col_res_1:
+                st.metric(
+                    "Valeur Modèle",
+                    f"{prix_actuel_ia:,.0f} €".replace(',', ' '),
+                    help="Estimation basée sur les stats réelles"
+                )
+            
+            with col_res_2:
+                st.metric(
+                    "Valeur Simulée",
+                    f"{prix_simule:,.0f} €".replace(',', ' '),
+                    delta=f"{delta_prix:,.0f} €",
+                    help="Estimation avec vos modifications"
+                )
+            
+            with col_res_3:
+                couleur = "green" if variation_percent > 0 else "red"
+                if variation_percent == 0: couleur = "gray"
+                
+                st.markdown(f"""
+                ### Impact : :{couleur}[{variation_percent:+.2f}%]
+                """)
+
+        except Exception as e:
+            st.error(f"Erreur lors de la simulation : {e}")
+
+        st.caption("Note : Les variations ne sont pas toujours linéaires. Le modèle se base sur des profils types existants.")
 
 # --- PAGE 5 : À PROPOS ---
-elif choix_page == "ℹ️ À Propos":
-    st.header("À Propos du Projet")
-    st.info("Présentation du projet et de la méthodologie.")
+
+elif choix_page == "ℹ️ À propos":
+        
+        
+        st.markdown("""
+        ### Origine du projet
+        Dans le cadre de notre cours « Web Scraping et Machine Learning » du Master 2 MECEN à l'Université de Tours, nous avons souhaité allier notre passion commune pour le football à nos compétences en Data Science. Partant du constat que l'évaluation d'un joueur lors du mercato est souvent biaisée par la "hype" ou l'émotion, nous avons cherché à rationaliser ce processus. Ce projet académique a pour but de fournir une analyse objective aux recruteurs : en nous basant uniquement sur la performance statistique réelle (via le scraping de données et l'entraînement de modèles prédictifs), notre outil vise à définir la "juste valeur" marchande des joueurs et à détecter les opportunités sous-cotées du marché.
+        """)
+
+        st.markdown("---")
+
+        st.markdown("""
+        ### Méthodologie & Organisation du projet
+        
+        Le premier objectif de ce projet a été de constituer une base de données complète. Pour cela, nous avons utilisé la méthode de **web scraping** sur le site de référence *Transfermarkt*. Cela nous a permis de récupérer les fiches de tous les joueurs évoluant dans les 5 grands championnats européens pour créer notre propre dataset.
+
+        Une phase importante de **nettoyage des données** a ensuite été nécessaire. En effet, selon la popularité des joueurs, certaines fiches étaient incomplètes ou comportaient des valeurs manquantes. Il a fallu trier et traiter ces informations pour obtenir une base propre et exploitable par nos algorithmes.
+
+        La seconde partie repose sur l'utilisation du **Machine Learning**. Nous avons entraîné plusieurs modèles pour prédire la valeur marchande d'un joueur, mais avec une stratégie bien précise : nous avons volontairement retenu **uniquement les statistiques sportives** (buts, passes, âge, régularité... ) pour l'entraînement. 
+        
+        C'est un choix crucial : si nous avions donné au modèle le nom du club actuel ou la réputation du joueur, il aurait simplement appris à copier les prix du marché. Or, notre objectif est inverse : nous voulons supprimer tout ce qui relève de la "hype" ou du marketing pour isoler et calculer la **valeur purement sportive** du joueur.
+        """)
+
+        st.markdown("---")
+        
+        st.markdown("""
+        ### L'outil au service du Mercato
+        
+        L'objectif de cette application est de rationaliser la prise de décision sur le marché des transferts. Elle a été conçue comme un assistant pour les recruteurs, permettant de naviguer entre l'analyse du présent et la projection vers le futur.
+        
+        **Voici comment utiliser les différentes fonctionnalités de l'outil :**
+        
+        * **1. Profil & Visualisation :** C'est le point d'entrée pour analyser un joueur spécifique. Cette section offre une vue d'ensemble sur les **statistiques générales et récentes**. Elle permet de valider le profil d'un joueur et de juger sa régularité.
+            
+        * **2. Estimation (Le Cœur du Projet) :** C'est la fonctionnalité centrale de notre travail. Ici, notre modèle calcule la **valeur purement sportive** du joueur. 
+            
+        * **3. Détection de Pépites :** Cette page sert à repérer les **anomalies du marché**. Elle filtre automatiquement la base de données pour faire ressortir les joueurs que notre modèle considère comme "sous-cotés". C'est l'outil idéal pour identifier de potentielles bonnes recrues à fort retour sur investissement.
+            
+        * **4. Simulateur Interactif :** Un espace d'expérimentation qui permet de **jouer avec les statistiques**. Vous pouvez modifier les performances d'un joueur (ajouter des buts, prolonger un contrat, augmenter le temps de jeu...) pour observer instantanément comment ces changements impacteraient sa valeur marchande.
+        """)
+
+        st.markdown("---")
+
+        st.markdown("""
+        ### Limites et Perspectives d'amélioration
+        
+        Notre application n'est pas sans limites et reste un projet académique. 
+        Elle n'est pas dynamique car le scraping des données n'est pas automatique : elle est donc utile pour le mercato hivernal 2025/2026, mais pas au-delà dans son état actuel.
+        
+        L'amélioration première serait de rendre automatique le scraping des données et de permettre la visualisation des 3 dernières saisons en continu.
+        """)
+
+        st.caption("Développé par Yann BROCHET et Iruomachi IRUOMAH - Master 2 Économie de l'entreprise et des marchés - 2025/2026")
