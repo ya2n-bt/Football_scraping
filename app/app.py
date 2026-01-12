@@ -18,8 +18,8 @@ st.set_page_config(
 # --- CHARGEMENT DES DONNÉES ---
 
 dossier_actuel = os.path.dirname(os.path.abspath(__file__))
-chemin_csv = os.path.join(dossier_actuel, '..', 'data', 'dataset_avec_predictions.csv')
-chemin_modele = os.path.join(dossier_actuel, '..', 'data', 'modele.pkl')
+chemin_csv = os.path.join(dossier_actuel, '..', 'data', 'dataset_avec_predictions_2.csv')
+chemin_modele = os.path.join(dossier_actuel, '..', 'data', 'modele_2.pkl')
 
 @st.cache_data
 def load_data():
@@ -127,7 +127,7 @@ with st.sidebar:
         options_nav = ["🏠 Accueil", "👤 Profil Joueur", "💰 Estimation Valeur Réelle", "💎 Pépites", "🔮 Simulateur", "ℹ️ À propos"]
         choix_page = st.radio("", options_nav, key="navigation")
 
-st.sidebar.info(f"Nombre de joueur dans la base de donnée : {len(df)}")
+st.sidebar.info(f"Nombre de joueurs dans la base : {len(df)}")
 st.title(f"{choix_page}")
 
 # --- PAGE 0 : ACCUEIL ---
@@ -167,7 +167,7 @@ if choix_page == "🏠 Accueil":
         
         st.write("""
             Rationalisez vos décisions grâce à la puissance du Machine Learning. 
-            Notre plateforme transforme les statistiques brutes en **indicateurs de valeur concrets** pour optimiser votre stratégie de recrutement.
+            Notre application transforme les statistiques brutes en **indicateurs de valeur concrets** pour optimiser votre stratégie de recrutement.
             """)
 
         st.markdown("---")
@@ -183,7 +183,7 @@ if choix_page == "🏠 Accueil":
         with col_home_2:
             with st.container(border=True):
                 st.markdown('<p class="feature-header">Estimation de la valeur sportive 💰</p>', unsafe_allow_html=True)
-                st.write("Déterminez la 'Juste Valeur' sportive d'un joueur, débarrassée des biais et de la hype médiatique.")
+                st.write("Déterminez la juste valeur sportive d'un joueur, débarrassée des biais et de la hype médiatique.")
                 st.button("Estimer une Valeur ➔", on_click=changer_page, args=["💰 Estimation & Juste Prix"], key="btn_p2", use_container_width=True)
 
         st.write("") 
@@ -199,7 +199,6 @@ if choix_page == "🏠 Accueil":
                 st.markdown('<p class="feature-header">Simulateur 🔮</p>', unsafe_allow_html=True)
                 st.write("Anticipez l'avenir. Modifiez les stats et voyez l'impact direct sur la valorisation marchande.")
                 st.button("Lancer la Simulation ➔", on_click=changer_page, args=["🔮 Simulateur"], key="btn_p4", use_container_width=True)
-
 
 # --- PAGE 1 : PROFIL JOUEUR ---
 if choix_page == "👤 Profil Joueur":
@@ -292,8 +291,8 @@ if choix_page == "👤 Profil Joueur":
 
     # --- GESTION DE L'ATTENTE ---
     if joueur_data is None:
-        if mode_recherche == "📂 Recherche par Filtres":
-            st.info("👆 Commencez par sélectionner une **Ligue** pour activer les filtres.")
+        if mode_recherche == "Recherche par Filtres":
+            st.info("👆 Commencez par sélectionner une **Ligue**.")
         else:
             st.info("👆 Tapez le nom d'un joueur dans la barre de recherche.")
         st.stop()
@@ -331,7 +330,7 @@ if choix_page == "👤 Profil Joueur":
     col_gauche_fixe, col_droite_dyn = st.columns(2)
     
     with col_gauche_fixe:
-        st.subheader("📊 Infos Générales")
+        st.subheader("Infos Générales")
         
         config_affichage = {
             'taille': '📏 Taille',
@@ -362,7 +361,7 @@ if choix_page == "👤 Profil Joueur":
         st.dataframe(df_affichage, hide_index=True, use_container_width=True)
 
     with col_droite_dyn:
-        st.subheader("📈 Performances par Saison")
+        st.subheader("Performances par Saison")
         
         saison_choisie = st.radio(
             "Choisir la saison :",
@@ -415,12 +414,14 @@ if choix_page == "👤 Profil Joueur":
         df_saison = pd.DataFrame(data_saison.items(), columns=['Statistique', 'Valeur'])
         st.dataframe(df_saison, hide_index=True, use_container_width=True)
 
+        st.caption("Les données disponibles vont jusqu’à la trêve hivernale 2025.")
+
     # --- LE SPIDER GRAPH ---  
     st.write("---")
     _, col_spider, _ = st.columns([0.2, 1, 0.2])
     
     with col_spider:
-        st.subheader("🕸️ Spider-graph")
+        st.subheader("Spider-graph")
         
         if "Gardien" in str(joueur_data['position']):
             categories = ['Minutes', 'Clean Sheets', 'Titularisations', 'Matchs Joués', 'Âge']
@@ -472,7 +473,6 @@ if choix_page == "👤 Profil Joueur":
         st.plotly_chart(fig_radar, use_container_width=True)
         st.caption("Comparaison au meilleur profil de la base (Saison 2024-2025).")
 
-
 # --- PAGE 2 : ESTIMATION VALEUR RÉELLE ---
 
 elif choix_page == "💰 Estimation Valeur Réelle":
@@ -481,9 +481,9 @@ elif choix_page == "💰 Estimation Valeur Réelle":
     # --- EXPLICATION DU MODELE ---
 
     st.info("""
-        **🧠 Comment fonctionne ce prédicteur ?**
+        **Comment fonctionne ce prédicteur ?**
         
-        Cet outil d'aide au recrutement repose sur un modèle de **Machine Learning (Random Forest)**. 
+        Cet outil d'aide au recrutement repose sur un modèle de **Machine Learning (XGBoost)**. 
         L'objectif est d'éliminer les biais subjectifs (réputation, "hype") pour isoler la **Juste Valeur** d'un joueur basée sur la data.
         
         Le modèle pondère une quarantaine de variables réparties en trois axes :
@@ -585,8 +585,8 @@ elif choix_page == "💰 Estimation Valeur Réelle":
             joueur = df[df['label_recherche'] == choix_recherche].iloc[0]
 
     if joueur is None:
-        if mode_recherche == "📂 Recherche par Filtres":
-            st.info("👆 Commencez par sélectionner une **Ligue** pour activer les filtres.")
+        if mode_recherche == "Recherche par Filtres":
+            st.info("👆 Commencez par sélectionner une **Ligue**.")
         else:
             st.info("👆 Tapez le nom d'un joueur dans la barre de recherche.")
             
@@ -730,7 +730,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
 
 
         st.info(f"""
-        **🧠 Analyse du score ({r2:.1%}) :**
+        **Analyse du score ({r2:.2%}) :**
         
         Nous ne cherchons pas à atteindre un score de **100%**. Une corrélation parfaite signifierait que le modèle reproduit les biais émotionnels du marché (Hype, Marketing, Panic buy...).
         
@@ -742,7 +742,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
 
          # --- GRAPHIQUE SUR/SOUS CÔTÉ ---
 
-        st.write("### 🎯 Analyse Visuelle : Marché vs Prédicteur")
+        st.write("### Analyse Visuelle : Marché vs Prédicteur")
         st.caption("Si un point est sur la ligne rouge, le modèle a trouvé exactement le bon prix. S'il est au-dessus, le modèle pense qu'il vaut plus cher (Sous-coté).")
         
         fig_perf = px.scatter(
@@ -831,7 +831,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
         st.error(f"Erreur lors de l'extraction des features : {e}")
 
     st.info("""
-            💡 **Analyse du modèle :**
+            **Analyse du modèle :**
             
             On constate que le modèle ne se focalise pas uniquement sur les statistiques individuelles (buts, passes). 
             Il priorise deux axes majeurs pour fixer le prix :
@@ -935,7 +935,7 @@ elif choix_page == "💎 Pépites":
             }
         )
         
-        st.info("💡 **Remarque :** Les joueurs avec une forte plus-value sont souvent des éléments performants évoluant dans des ligues et/ou clubs moins médiatisées. Ce sont des bonnes cibles pour les recruteurs.")
+        st.info("**Remarque :** Les joueurs avec une forte plus-value sont souvent des éléments performants évoluant dans des ligues et/ou clubs moins médiatisées. Ce sont des bonnes cibles pour les recruteurs.")
 
 # --- PAGE 4 : SIMULATEUR ---
 elif choix_page == "🔮 Simulateur":
