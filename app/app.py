@@ -18,8 +18,8 @@ st.set_page_config(
 # --- CHARGEMENT DES DONNÉES ---
 
 dossier_actuel = os.path.dirname(os.path.abspath(__file__))
-chemin_csv = os.path.join(dossier_actuel, '..', 'data', 'dataset_avec_predictions_2.csv')
-chemin_modele = os.path.join(dossier_actuel, '..', 'data', 'modele_2.pkl')
+chemin_csv = os.path.join(dossier_actuel, '..', 'data', 'dataset_avec_predictions.csv')
+chemin_modele = os.path.join(dossier_actuel, '..', 'data', 'modele.pkl')
 
 @st.cache_data
 def load_data():

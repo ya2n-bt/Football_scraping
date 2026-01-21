@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional, Union
+from typing import Optional
 
 class JoueurStats(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
@@ -20,7 +20,6 @@ class JoueurStats(BaseModel):
     pied_fort: Optional[str] = Field(alias="Pied fort", default=None)
 
     # --- SAISON 25/26 ---
-    # Pour toutes les stats, on autorise le texte (ex: "-")
     minutes_25_26: int | str | None = Field(alias="Minutes jouées 25/26", default=None)
     matchs_25_26: int | str | None = Field(alias="Nombre de matchs 25/26", default=None)
     entrees_25_26: int | str | None = Field(alias="Nombre d'entrées en jeu 25/26", default=None)

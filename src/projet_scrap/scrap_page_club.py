@@ -1,15 +1,14 @@
 from playwright.sync_api import sync_playwright
-from scrap_performance_detaillees import ScrapPerformancesDetaillees as s
-from scrap_profil import ScrapProfil as sp
-from scrap_blessure import ScrapBlessure as sb
-from scrap_trophees import ScrapTrophees as st
-from Basemodel import JoueurStats 
+from projet_scrap.scrap_performance_detaillees import ScrapPerformancesDetaillees as s
+from projet_scrap.scrap_profil import ScrapProfil as sp
+from projet_scrap.scrap_blessure import ScrapBlessure as sb
+from projet_scrap.scrap_trophees import ScrapTrophees as st
+from projet_scrap.basemodel import JoueurStats 
 import re
 import json
 import time
 import random
 
-# --- FONCTIONS DE NAVIGATION DES PAGES ---
 def goto_profil_page(page, base_url):
     profil_url = base_url.replace("leistungsdatendetails", "profil")
     page.goto(profil_url, wait_until="domcontentloaded", timeout=60000)
@@ -22,11 +21,9 @@ def goto_trophees_page(page, base_url):
     profil_url = base_url.replace("leistungsdatendetails", "erfolge")
     page.goto(profil_url, wait_until="domcontentloaded", timeout=60000)
 
-# --- SCRAPING POUR 1 JOUEUR  ---
 def scraper_un_joueur(page, url_joueur):
     print(f"Scraping de : {url_joueur}")
     
-    # 1. On s'assure d'être sur la page "Stats détaillées"
     if "profil" in url_joueur:
         url_stats = url_joueur.replace("profil", "leistungsdatendetails")
         url_stats += "/plus/1"
@@ -36,7 +33,6 @@ def scraper_un_joueur(page, url_joueur):
     try:
         page.goto(url_stats, wait_until="domcontentloaded", timeout=60000)
         
-        # --- RECUPERATION INFORMATIONS PROFIL ---
         raw_data = {
             "Nom": s.scrap_nom(page),
             "Nationalité": s.scrap_nationalite(page),
@@ -49,7 +45,7 @@ def scraper_un_joueur(page, url_joueur):
             "Valeur": s.scrap_valeur(page),
             "Nombre de sélections internationales": s.scrap_nombre_selections_internationales(page),
             
-            # SAISON 25/26 ...
+            # SAISON 25/26 
             "Minutes jouées 25/26": s.scrap_minutes_jouees_25_26(page),
             "Nombre de matchs 25/26": s.scrap_nombre_matchs_25_26(page),
             "Nombre d'entrées en jeu 25/26": s.scrap_entrees_en_jeu_25_26(page),
@@ -60,7 +56,7 @@ def scraper_un_joueur(page, url_joueur):
             "Nombre clean de sheets 25/26": s.scrap_nombre_clean_sheets_25_26(page),
             "Nombre de buts encaissés 25/26": s.scrap_nombre_buts_encaisses_25_26(page),
 
-            # SAISON 24/25 ...
+            # SAISON 24/25 
             "Minutes jouées 24/25": s.scrap_minutes_jouees_24_25(page),
             "Nombre de matchs 24/25": s.scrap_nombre_matchs_24_25(page),
             "Nombre d'entrées en jeu 24/25": s.scrap_entrees_en_jeu_24_25(page),
@@ -71,7 +67,7 @@ def scraper_un_joueur(page, url_joueur):
             "Nombre clean de sheets 24/25": s.scrap_nombre_clean_sheets_24_25(page),
             "Nombre de buts encaissés 24/25": s.scrap_nombre_buts_encaisses_24_25(page),
 
-            # SAISON 23/24 ...
+            # SAISON 23/24 
             "Minutes jouées 23/24": s.scrap_minutes_jouees_23_24(page),
             "Nombre de matchs 23/24": s.scrap_nombre_matchs_23_24(page),
             "Nombre d'entrées en jeu 23/24": s.scrap_entrees_en_jeu_23_24(page),
@@ -83,11 +79,9 @@ def scraper_un_joueur(page, url_joueur):
             "Nombre de buts encaissés 23/24": s.scrap_nombre_buts_encaisses_23_24(page),
         }
 
-        # --- Navigation vers Profil ---
         goto_profil_page(page, url_stats)
         raw_data["Pied fort"] = sp.scrap_pied_fort(page)
 
-        # --- Navigation vers Blessures ---
         goto_blessure_page(page, url_stats)
         raw_data.update({
             "Nombre de blessures sur les 3 dernières saisons": sb.scrap_nombre_blessures(page),
@@ -95,11 +89,9 @@ def scraper_un_joueur(page, url_joueur):
             "Nombre de jours sous blessures": sb.scrap_jours_blessures(page)
         })
 
-        # --- Navigation vers Trophées ---
         goto_trophees_page(page, url_stats)
         raw_data["Nombre de trophées sur les 3 dernières saisons"] = st.scrap_nombre_trophees(page)
 
-        # Retourne l'objet Pydantic
         return JoueurStats(**raw_data)
 
     except Exception as e:
@@ -108,7 +100,6 @@ def scraper_un_joueur(page, url_joueur):
 
 
 def run_equipe():    
-    # --- SIMPLIFICATION : ON PART DIRECTEMENT DU PSG, objectif : généraliser pour tous les clubs de la ligue ---
     URL_CLUB = "https://www.transfermarkt.fr/bayer-04-leverkusen/startseite/verein/15"
     
     with sync_playwright() as playwright:
@@ -155,11 +146,11 @@ def run_equipe():
 
         browser.close()
         
-        # --- BILAN FINAL DANS LA CONSOLE ---
+        # --- BILAN FINAL ---
         print("-" * 30)
-        print(f"🏁 SCRAPING TERMINÉ")
-        print(f"✅ Succès : {nb_succes}")
-        print(f"❌ Erreurs : {nb_erreurs}")
+        print(f"SCRAPING TERMINÉ")
+        print(f"Succès : {nb_succes}")
+        print(f"Erreurs : {nb_erreurs}")
         if erreurs_logs:
             print("Joueurs échoués :")
             for err_url in erreurs_logs:

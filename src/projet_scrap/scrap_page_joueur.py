@@ -1,9 +1,9 @@
 from playwright.sync_api import sync_playwright
-from scrap_performance_detaillees import ScrapPerformancesDetaillees as s
-from scrap_profil import ScrapProfil as sp
-from scrap_blessure import ScrapBlessure as sb
-from scrap_trophees import ScrapTrophees as st
-from Basemodel import JoueurStats
+from projet_scrap.scrap_performance_detaillees import ScrapPerformancesDetaillees as s
+from projet_scrap.scrap_profil import ScrapProfil as sp
+from projet_scrap.scrap_blessure import ScrapBlessure as sb
+from projet_scrap.scrap_trophees import ScrapTrophees as st
+from projet_scrap.basemodel import JoueurStats
 import re 
 
 URL = "https://www.transfermarkt.fr/kylian-mbappe/leistungsdatendetails/spieler/342229/saison//verein/0/liga/0/wettbewerb//pos/0/trainer_id/0/plus/1"

@@ -1,4 +1,3 @@
-# scrap_club_info.py
 from playwright.sync_api import Page
 import re
 

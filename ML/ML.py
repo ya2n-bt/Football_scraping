@@ -13,7 +13,7 @@ from sklearn.metrics import mean_absolute_error, r2_score
 
 # --- PRÉPARATION DES DONNÉES ---
 chemin_actuel = os.path.dirname(os.path.abspath(__file__))
-chemin_json = os.path.join(chemin_actuel, '..', '..', '..', 'data', 'dataset_final.json')
+chemin_json = os.path.join(chemin_actuel, '..', 'data', 'dataset_final.json')
 
 df = pd.read_json(chemin_json)
 cols_a_convertir = ['taille', 'valeur', 'fin_contrat'] 
@@ -51,7 +51,7 @@ preprocessor = ColumnTransformer(
         ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), cols_cat_reelles)
     ])
 
-# --- CONFIGURATION DES GRIDS ÉTENDUES ---
+# --- CONFIGURATION DES GRIDS ---
 models_config = {
     "Random Forest": {
         "model": RandomForestRegressor(random_state=42),

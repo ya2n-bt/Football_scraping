@@ -1,16 +1,14 @@
 from playwright.sync_api import sync_playwright
-from scrap_performance_detaillees import ScrapPerformancesDetaillees as s
-from scrap_profil import ScrapProfil as sp
-from scrap_blessure import ScrapBlessure as sb
-from scrap_trophees import ScrapTrophees as st
-from scrap_club_info import ScrapClubInfo as sci
-from Basemodel import JoueurStats 
+from projet_scrap.scrap_performance_detaillees import ScrapPerformancesDetaillees as s
+from projet_scrap.scrap_profil import ScrapProfil as sp
+from projet_scrap.scrap_blessure import ScrapBlessure as sb
+from projet_scrap.scrap_trophees import ScrapTrophees as st
+from projet_scrap.scrap_club_info import ScrapClubInfo as sci
+from projet_scrap.basemodel import JoueurStats 
 import re
 import json
 import time
 import random
-
-# --- FONCTIONS DE NAVIGATION (Identiques) ---
 
 def goto_profil_page(page, base_url):
     profil_url = base_url.replace("leistungsdatendetails", "profil")
@@ -24,11 +22,7 @@ def goto_trophees_page(page, base_url):
     profil_url = base_url.replace("leistungsdatendetails", "erfolge")
     page.goto(profil_url, wait_until="domcontentloaded", timeout=60000)
 
-# --- SCRAPING D'UN JOUEUR (Identique) ---
 def scraper_un_joueur(page, url_joueur, club_infos=None):
-    # ... (Ton code scraper_un_joueur reste EXACTEMENT le même ici) ...
-    # Pour ne pas surcharger la réponse, je ne le recolle pas, 
-    # mais garde ta fonction telle quelle ! 
     
     if "profil" in url_joueur:
         url_stats = url_joueur.replace("profil", "leistungsdatendetails")
@@ -39,7 +33,6 @@ def scraper_un_joueur(page, url_joueur, club_infos=None):
     try:
         page.goto(url_stats, wait_until="domcontentloaded", timeout=60000)
         
-        # --- RECUPERATION INFORMATIONS PROFIL ---
         raw_data = {
             "Nom": s.scrap_nom(page),
             "Nationalité": s.scrap_nationalite(page),
@@ -112,22 +105,18 @@ def scraper_un_joueur(page, url_joueur, club_infos=None):
         print(f"❌ Erreur sur {url_joueur}: {e}")
         return None
 
-# --- NOUVELLE FONCTION : SCRAPER UN CLUB ENTIER ---
-# Cette fonction ne lance pas de navigateur, elle utilise celui qu'on lui donne (page)
 def scraper_club(page, url_club):
-    print(f"\n🔵 TRAITEMENT DU CLUB : {url_club}")
+    print(f"TRAITEMENT DU CLUB : {url_club}")
     
     page.goto(url_club, wait_until="domcontentloaded", timeout=60000)
     
-    print("   📊 Récupération des infos du club...")
+    print("Récupération des infos du club...")
     infos_du_club = {
         "valeur": sci.scrap_valeur_totale_club(page),
         "classement": sci.scrap_classement_ligue(page)
     }
-    print(f"   -> Valeur: {infos_du_club['valeur']} | Classement: {infos_du_club['classement']}")
 
-
-    print("   Récupération des joueurs...")
+    print("Récupération des joueurs...")
     page.wait_for_selector("td.hauptlink a", timeout=15000)
     liens = page.locator("td.hauptlink a").all()
     urls_joueurs = set()
@@ -138,24 +127,21 @@ def scraper_club(page, url_club):
             full_url = "https://www.transfermarkt.fr" + href
             urls_joueurs.add(full_url)
             
-    print(f"   {len(urls_joueurs)} joueurs trouvés dans ce club.")
+    print(f"{len(urls_joueurs)} joueurs trouvés dans ce club.")
 
     club_data = []
     
-    # Boucle sur les joueurs du club
     for i, url in enumerate(urls_joueurs):
         joueur = scraper_un_joueur(page, url, club_infos=infos_du_club)
         if joueur:
             club_data.append(joueur.model_dump(by_alias=False))
         
-        # Pause courte entre les joueurs
         time.sleep(random.uniform(1.5, 3))
         
     return club_data
 
-# --- FONCTION PRINCIPALE : LIGUE 1 ---
 def run_ligue_1():
-    URL_LIGUE = "https://www.transfermarkt.fr/bundesliga/startseite/wettbewerb/L1"
+    URL_LIGUE = "https://www.transfermarkt.fr/ligue-1/startseite/wettbewerb/FR1"
     
     data_globale = []
     
@@ -163,22 +149,17 @@ def run_ligue_1():
         browser = playwright.chromium.launch(headless=False)
         context = browser.new_context()
         page = context.new_page()
-        # On bloque les images pour aller plus vite
         page.route(re.compile(r"(.png|.jpg|.jpeg|.svg|.woff|.css)"), lambda route: route.abort())
 
-        # 1. Récupérer les liens des 18 clubs
-        print("🌍 Navigation vers la Ligue 1...")
+        print("Navigation vers la Ligue 1")
         page.goto(URL_LIGUE, wait_until="domcontentloaded")
         
-        print("📋 Récupération de la liste des clubs...")
-        # Le sélecteur pour avoir les liens des clubs dans le tableau du classement
-        # On cible td.hauptlink.no-border-links > a
+        print("Récupération de la liste des clubs")
         liens_clubs = page.locator("td.hauptlink.no-border-links a").all()
         
         urls_clubs = set()
         for lien in liens_clubs:
             href = lien.get_attribute("href")
-            # On vérifie que c'est bien un lien de club (/startseite/verein/)
             if href and "/startseite/verein/" in href:
                 full_url = "https://www.transfermarkt.fr" + href
                 urls_clubs.add(full_url)
@@ -186,24 +167,17 @@ def run_ligue_1():
         print(f"✅ {len(urls_clubs)} clubs trouvés. Début du scraping général.")
         print("-" * 40)
 
-        # 2. Boucle sur chaque club
         for index_club, url_club in enumerate(urls_clubs):
-            print(f"\n🏟️ CLUB {index_club + 1}/{len(urls_clubs)}")
+            print(f"\nCLUB {index_club + 1}/{len(urls_clubs)}")
             
-            # On lance le scraping du club
             donnees_club = scraper_club(page, url_club)
             
-            # On ajoute les données du club à la liste globale
             data_globale.extend(donnees_club)
             
-            # SAUVEGARDE INTERMÉDIAIRE (Sécurité)
-            # Comme c'est long, on sauvegarde après chaque club pour ne rien perdre si ça plante
             with open("ligue1_intermediaire.json", "w", encoding="utf-8") as f:
                 json.dump(data_globale, f, indent=4, ensure_ascii=False)
-            print(f"💾 Données sauvegardées (Total joueurs: {len(data_globale)})")
+            print(f"Données sauvegardées (Total joueurs: {len(data_globale)})")
 
-            # PAUSE LONGUE ENTRE LES CLUBS
-            # C'est vital pour ne pas se faire bannir après le 3ème club
             pause = random.uniform(5, 10)
             print(f"💤 Pause changement de club ({int(pause)}s)...")
             time.sleep(pause)
@@ -212,11 +186,10 @@ def run_ligue_1():
     
     return data_globale
 
-# --- LANCEMENT ---
 if __name__ == "__main__":
     data_finale = run_ligue_1()
 
-    output_file = "Bundes.json"
+    output_file = "Ligue1.json"
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(data_finale, f, indent=4, ensure_ascii=False)
 
