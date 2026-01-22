@@ -123,8 +123,8 @@ print(df_res[["Modèle", "Meilleur R² (CV)", "R² (Test)", "MAE (€)"]])
 print(f"\n🏆 MEILLEUR MODÈLE RETENU : {winner_name}")
 
 # --- SAUVEGARDE DU MODÈLE ---
-joblib.dump(best_model, 'modele_2.pkl')
-print(f"\n💾 Modèle sauvegardé sous 'modele_2.pkl'")
+joblib.dump(best_model, 'modele.pkl')
+print(f"\n💾 Modèle sauvegardé sous 'modele.pkl'")
 
 # ---  PRÉDICTIONS SUR LE DF COMPLET ---
 df_complet = df.copy()

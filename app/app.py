@@ -1050,7 +1050,7 @@ elif choix_page == "🔮 Simulateur":
         df_simule = pd.DataFrame(row_original).T 
         
         df_simule['age'] = nouvel_age
-        df_simule['fin_contrat'] = nouveaux_jours_contrat
+        df_simule['fin_contrat'] =  nouveaux_jours_contrat
         
         df_simule['matchs_24_25'] = nouveaux_matchs
         df_simule['minutes_24_25'] = nouvelles_minutes
@@ -1103,7 +1103,6 @@ elif choix_page == "🔮 Simulateur":
         st.caption("Note : Les variations ne sont pas toujours linéaires. Le modèle se base sur des profils types existants.")
 
 # --- PAGE 5 : À PROPOS ---
-
 elif choix_page == "ℹ️ À propos":
         
         

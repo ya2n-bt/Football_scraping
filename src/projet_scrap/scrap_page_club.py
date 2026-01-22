@@ -100,7 +100,7 @@ def scraper_un_joueur(page, url_joueur):
 
 
 def run_equipe():    
-    URL_CLUB = "https://www.transfermarkt.fr/bayer-04-leverkusen/startseite/verein/15"
+    URL_CLUB = "https://www.transfermarkt.fr/paris-saint-germain/startseite/verein/583"
     
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=False)
