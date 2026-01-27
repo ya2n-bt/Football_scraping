@@ -18,8 +18,10 @@ st.set_page_config(
 # --- CHARGEMENT DES DONNÉES ---
 
 dossier_actuel = os.path.dirname(os.path.abspath(__file__))
-chemin_csv = os.path.join(dossier_actuel, '..', 'data', 'dataset_avec_predictions.csv')
-chemin_modele = os.path.join(dossier_actuel, '..', 'data', 'modele.pkl')
+chemin_csv = os.path.join(dossier_actuel, '..', 'data', 'dataset_avec_predictions_final.csv')
+chemin_csv_2 = os.path.join(dossier_actuel, '..', 'data', 'dataset_avec_predictions_final_2.csv')
+chemin_modele = os.path.join(dossier_actuel, '..', 'data', 'modele_final.pkl')
+chemin_modele_2 = os.path.join(dossier_actuel, '..', 'data', 'modele_final_2.pkl')
 
 @st.cache_data
 def load_data():
@@ -30,9 +32,22 @@ def load_data():
     df = pd.read_csv(chemin_csv)
     return df
 
+@st.cache_data
+def load_data_2():
+    if not os.path.exists(chemin_csv):
+        st.error(f"Fichier introuvable ici : {chemin_csv_2}")
+        return None
+        
+    df2 = pd.read_csv(chemin_csv_2)
+    return df2
+
 df = load_data()
+df2 = load_data_2()
 
 if df is None:
+    st.stop()
+
+if df2 is None:
     st.stop()
 
 @st.cache_resource
@@ -43,6 +58,15 @@ def load_modele():
         return None
 
 best_model = load_modele()
+
+@st.cache_resource
+def load_modele_2():
+    if os.path.exists(chemin_modele):
+        return joblib.load(chemin_modele_2)
+    else:
+        return None
+
+best_model_2 = load_modele_2()
 
 # --- CRÉATION DE LA BARRE LATÉRALE ---
 
@@ -483,15 +507,15 @@ elif choix_page == "💰 Estimation Valeur Réelle":
     st.info("""
         **Comment fonctionne ce prédicteur ?**
         
-        Cet outil d'aide au recrutement repose sur un modèle de **Machine Learning (XGBoost)**. 
-        L'objectif est d'éliminer les biais subjectifs (réputation, "hype") pour isoler la **Juste Valeur** d'un joueur basée sur la data.
+        Cet outil d'aide au recrutement repose sur un modèle de **Machine Learning (Gradient Boosting)**. 
+        L'objectif est d'éliminer les biais subjectifs (maillot, réputation, "hype") pour isoler la **valeur uniquement sportive** d'un joueur basée sur la data.
         
         Le modèle pondère une quarantaine de variables réparties en trois axes :
         * **Performance & Impact :** Buts, passes décisives, minutes jouées ...
         * **Fiabilité & Palmarès :** Historique des blessures, nombre de trophées récents, régularité...
         * **Contexte Contractuel :** Durée restante de contrat, âge, ligue, poste...
         
-        **Usage pour les recruteurs :** Détecter les **opportunités d'achat** (joueurs sous-cotés) et optimiser les **ventes** (joueurs sur-cotés par la hype), afin d'appuyer chaque négociation sur une valeur objective.
+        Pour distinguer le talent brut de la valeur marchande, nous avons confronté un modèle "pure performance" à un modèle "contexte global". L'objectif est d'isoler l'impact du club et de la ligue afin d'identifier les joueurs dont le prix est artificiellement gonflé par leur environnement sportif. (l'objectif pour le recruteur est de cibler les bonnes affaires ou les profils surpayés)
         """)
 
     st.markdown("---")
@@ -506,7 +530,8 @@ elif choix_page == "💰 Estimation Valeur Réelle":
         horizontal=True
     )
 
-    joueur = None 
+    joueur = None
+    joueur2 = None
 
     # --- PAR FILTRES ---
     if mode_recherche == "Recherche par Filtres":
@@ -568,6 +593,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
 
         if joueur_sel:
             joueur = df_club[df_club['nom'] == joueur_sel].iloc[0]
+            joueur2 = df2[(df2['nom'] == joueur['nom']) & (df2['club'] == joueur['club'])].iloc[0]
 
     # --- PAR NOM ---
     else:
@@ -583,8 +609,9 @@ elif choix_page == "💰 Estimation Valeur Réelle":
         
         if choix_recherche:
             joueur = df[df['label_recherche'] == choix_recherche].iloc[0]
+            joueur2 = df2[(df2['nom'] == joueur['nom']) & (df2['club'] == joueur['club'])].iloc[0]
 
-    if joueur is None:
+    if joueur is None or joueur2 is None:
         if mode_recherche == "Recherche par Filtres":
             st.info("👆 Commencez par sélectionner une **Ligue**.")
         else:
@@ -596,11 +623,16 @@ elif choix_page == "💰 Estimation Valeur Réelle":
 
     # --- VERDICT FINANCIER ---
 
+    # --- VERDICT FINANCIER / MODELE 1 ---
+
     st.subheader(f"💰 Verdict Financier : {joueur['nom']}")
+
+    st.subheader("Modèle 1 : Performance Pure")
+    st.write("")
 
      # --- TROIS BOÎTES D'INFOS ---
 
-    col_reel, col_ia, col_verdict = st.columns(3)
+    col_reel, col_modele, col_verdict = st.columns(3)
 
     with col_reel:
         valeur_reelle = joueur['valeur']
@@ -626,17 +658,17 @@ elif choix_page == "💰 Estimation Valeur Réelle":
         </div>
         """, unsafe_allow_html=True)
 
-    with col_ia:
-        valeur_ia = joueur['valeur_estimee']
+    with col_modele:
+        valeur_modele = joueur['valeur_estimee']
         
-        if pd.isna(valeur_ia):
+        if pd.isna(valeur_modele):
             txt_ia = "Erreur"
             delta_html = ""
         else:
-            txt_ia = f"{valeur_ia:,.0f} €".replace(',', ' ')
+            txt_ia = f"{valeur_modele:,.0f} €".replace(',', ' ')
             
             if valeur_reelle_num > 0:
-                delta = valeur_ia - valeur_reelle_num
+                delta = valeur_modele - valeur_reelle_num
                 signe = "+" if delta > 0 else ""
                 couleur_delta = "#4ade80" if delta > 0 else "#f87171" 
                 delta_txt = f"{signe}{delta:,.0f} €".replace(',', ' ')
@@ -691,87 +723,183 @@ elif choix_page == "💰 Estimation Valeur Réelle":
         </div>
         """, unsafe_allow_html=True)
 
+    st.write("")
+    st.write("")
+    st.subheader("Modèle 2 : Club et ligue pris en compte")
+    st.write("")
+
+    # --- VERDICT FINANCIER / MODELE 2 ---
+
+     # --- TROIS BOÎTES D'INFOS ---
+
+    col_reel2, col_modele2, col_verdict2 = st.columns(3)
+
+    with col_reel2:
+        valeur_reelle2 = joueur2['valeur']
+        
+        if pd.isna(valeur_reelle2):
+            txt_reel2 = "Inconnue"
+            valeur_reelle_num2 = 0
+        else:
+            txt_reel2 = f"{valeur_reelle2:,.0f} €".replace(',', ' ')
+            valeur_reelle_num2 = valeur_reelle2
+        
+        st.markdown(f"""
+        <div style="text-align: center; border: 2px solid #ffffff; padding: 15px; border-radius: 10px; height: 100%;">
+            <p style="margin:0; opacity: 0.7; font-size: 0.9em; font-weight: bold;">VALEUR MARCHÉ</p>
+            <h2 style="margin:5px 0;">{txt_reel2}</h2>
+            <p style="margin:0; opacity: 0.5; font-size: 0.8em;">Prix officiel Transfermarkt</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_modele2:
+        valeur_modele2 = joueur2['valeur_estimee']
+        
+        if pd.isna(valeur_modele2):
+            txt_ia2 = "Erreur"
+            delta_html2 = ""
+        else:
+            txt_ia2 = f"{valeur_modele2:,.0f} €".replace(',', ' ')
+            
+            if valeur_reelle_num2 > 0:
+                delta2 = valeur_modele2 - valeur_reelle_num2
+                signe2 = "+" if delta2 > 0 else ""
+                couleur_delta2 = "#4ade80" if delta2 > 0 else "#f87171" 
+                delta_txt2 = f"{signe2}{delta2:,.0f} €".replace(',', ' ')
+                delta_html2 = f"<span style='color: {couleur_delta2}; font-weight: bold;'>{delta_txt2}</span>"
+            else:
+                delta_html2 = "<span style='color: #60a5fa; font-weight: bold;'>✨ Nouvelle Estimation</span>"
+
+        st.markdown(f"""
+        <div style="text-align: center; border: 2px solid #ffffff; padding: 15px; border-radius: 10px; height: 100%;">
+            <p style="margin:0; opacity: 0.7; font-size: 0.9em; font-weight: bold;">ESTIMATION (COMPLÈTE)</p>
+            <h2 style="margin:5px 0;">{txt_ia2}</h2>
+            <p style="margin:0; font-size: 0.9em;">{delta_html2}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_verdict2:
+        statut2 = joueur2['statut']
+        
+        if statut2 == "Sous-coté":
+            couleur_bordure2 = "#4ade80"
+            emoji2 = "✅"
+            desc2 = "Potentiel de plus-value"
+        elif statut2 == "Sur-coté":
+            couleur_bordure2 = "#f87171" 
+            emoji2 = "⚠️"
+            desc2 = "Attention au prix"
+        else: 
+            couleur_bordure2 = "#60a5fa" 
+            emoji2 = "💎"
+            desc2 = "Joueur à révéler"
+
+        st.markdown(f"""
+        <div style="text-align: center; border: 2px solid {couleur_bordure2}; padding: 15px; border-radius: 10px; height: 100%;">
+            <p style="margin:0; color: {couleur_bordure2}; font-size: 0.9em; font-weight: bold;">VERDICT MARCHÉ</p>
+            <h2 style="margin:5px 0; color: {couleur_bordure2};">{emoji2} {statut2}</h2>
+            <p style="margin:0; opacity: 0.7; font-size: 0.8em;">{desc2}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
     st.markdown("---")
 
      # --- PERFORMANCE DU MODÈLE ---
 
-    st.subheader("📊 Performance du prédicteur & Philosophie du Modèle")
+    st.subheader("📊 Performance des prédicteurs :")
 
-    df_perf = df.dropna(subset=['valeur', 'valeur_estimee'])
+    kpi1, kpi2, kpi3 = st.columns(3)
     
-    if len(df_perf) > 0:
-
-        r2 = r2_score(df_perf['valeur'], df_perf['valeur_estimee'])
-        
-        mae = mean_absolute_error(df_perf['valeur'], df_perf['valeur_estimee'])
-
-        kpi1, kpi2, kpi3 = st.columns(3)
-
-        with kpi1:
-            st.metric(
-                label="Précision (R²)", 
-                value=f"{r2:.2%}", 
-                help="Proche de 100% = Le modèle colle parfaitement aux prix du marché."
-            )
-        
-        with kpi2:
-            st.metric(
-                label="Écart Moyen (MAE)", 
-                value=f"{mae:,.0f} €".replace(',', ' '),
-                help="En moyenne, le modèle surestime ou sous-estime les joueurs de ce montant."
-            )
-
-        with kpi3:
-            st.metric(
-                label="Joueurs Analysés", 
-                value=f"{len(df_perf)}",
-                help="Nombre de joueurs utilisés pour ces calculs."
-            )
-
-
-        st.info(f"""
-        **Analyse du score ({r2:.2%}) :**
-        
-        Nous ne cherchons pas à atteindre un score de **100%**. Une corrélation parfaite signifierait que le modèle reproduit les biais émotionnels du marché (Hype, Marketing, Panic buy...).
-        
-        Ce modèle se concentre **uniquement sur la performance sportive objective**. 
-        L'écart restant n'est donc pas une erreur technique, mais représente la **subjectivité du marché** (la différence entre le talent pur et le prix affiché).
-        """)
-
-        st.markdown("---")
-
-         # --- GRAPHIQUE SUR/SOUS CÔTÉ ---
-
-        st.write("### Analyse Visuelle : Marché vs Prédicteur")
-        st.caption("Si un point est sur la ligne rouge, le modèle a trouvé exactement le bon prix. S'il est au-dessus, le modèle pense qu'il vaut plus cher (Sous-coté).")
-        
-        fig_perf = px.scatter(
-            df_perf,
-            x='valeur',
-            y='valeur_estimee',
-            color='ligue',     
-            hover_name='nom', 
-            hover_data=['club', 'age'],
-            opacity=0.6,
-            labels={'valeur': 'Valeur Transfermarkt (€)', 'valeur_estimee': 'Valeur estimée (€)'},
-            title=f"Nuage de points"
+    with kpi1:
+        st.metric(
+            label="R² (Précision)", 
+            value=f"71,12%", 
         )
         
-        fig_perf.add_shape(
-            type="line",
-            x0=0, y0=0,
-            x1=df_perf['valeur'].max(), y1=df_perf['valeur'].max(),
-            line=dict(color="Red", width=2, dash="dash")
+    with kpi2:
+        st.metric(
+            label="Écart Moyen (MAE)", 
+            value="5 529 367 €",
+            help="En moyenne, le modèle surestime ou sous-estime les joueurs de ce montant."
+        )
+    
+    with kpi3:
+        st.metric(
+            label="Nombre de variables explicatives", 
+            value="38",
+            help="Nombre de joueurs utilisés pour ces calculs."
+        )
+
+    st.write("")
+    st.write("")
+    st.subheader("Comparaison en prenant en compte le club et la ligue")
+
+    kpi11, kpi22, kpi33 = st.columns(3)
+    
+    with kpi11:
+        st.metric(
+            label="R² (Précision)", 
+            value=f"80,6%", 
         )
         
-        st.plotly_chart(fig_perf, use_container_width=True)
+    with kpi22:
+        st.metric(
+            label="Écart Moyen (MAE)", 
+            value="4 538 345 €",
+            help="En moyenne, le modèle surestime ou sous-estime les joueurs de ce montant."
+        )
+    
+    with kpi33:
+        st.metric(
+            label="Nombre de variables explicatives", 
+            value="41",
+            help="Nombre de joueurs utilisés pour ces calculs."
+        )
 
-    else:
-        st.warning("⚠️ Erreur : Pas assez de données pour évaluer les performances du modèle.")
+    st.write("")
+
+    st.info(f"""
+    **Comparaison des modèles :**
+    
+    En rajoutant les variables de **club** et de **ligue**, le modèle explique une plus grande partie de la variance des prix (80,6% vs 71,12%).
+    
+    Bien que l'influence du club et de la ligue soit indéniable sur la valeur marchande, notre objectif est de neutraliser ces variables contextuelles afin d'isoler et d'évaluer uniquement la performance sportive du joueur. Nous portons donc notre regard sur le premier modèle
+    """)
 
     st.markdown("---")
 
-     # --- TOP 10 VARIABLES IMPORTANTES ---
+    # --- GRAPHIQUE SUR/SOUS CÔTÉ ---
+
+    st.write("### Analyse Visuelle : Marché vs Prédicteur (Modèle 1)")
+    st.caption("Si un point est sur la ligne rouge, le modèle a trouvé exactement le bon prix. S'il est au-dessus, le modèle pense qu'il vaut plus cher (Sous-coté).")
+    
+    top_5_ligues = ['Ligue 1', 'Premier League', 'Bundesliga', 'Serie A', 'LaLiga']
+    df_ligue = df[df['ligue'].isin(top_5_ligues)].copy()
+    
+    fig_perf = px.scatter(
+        df_ligue,
+        x='valeur',
+        y='valeur_estimee',
+        color='ligue',     
+        hover_name='nom', 
+        hover_data=['club', 'age'],
+        opacity=0.6,
+        labels={'valeur': 'Valeur Transfermarkt (€)', 'valeur_estimee': 'Valeur estimée (€)'},
+        title=f"Nuage de points"
+    )
+    
+    fig_perf.add_shape(
+        type="line",
+        x0=0, y0=0,
+        x1=df['valeur'].max(), y1=df['valeur'].max(),
+        line=dict(color="Red", width=2, dash="dash")
+    )
+    
+    st.plotly_chart(fig_perf, use_container_width=True)
+
+    st.markdown("---")
+
+    # --- TOP 10 VARIABLES IMPORTANTES / MODÈLE 1 ---
 
     st.subheader("Features importantes du modèle")
 
@@ -815,7 +943,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
                 x='Importance', 
                 y='Variable_Clean', 
                 orientation='h',
-                title="Top 10 des facteurs déterminants du prix",
+                title="Top 10 des facteurs déterminants du prix - Modèle 1 (Performance Pure)",
                 text_auto='.1%' 
             )
             
@@ -829,6 +957,57 @@ elif choix_page == "💰 Estimation Valeur Réelle":
 
     except Exception as e:
         st.error(f"Erreur lors de l'extraction des features : {e}")
+
+    # --- TOP 10 VARIABLES IMPORTANTES / MODÈLE 2 ---
+
+    try:
+        cols_num_2 = [
+            'age', 'taille', 'fin_contrat', 'selections_inter', 'minutes_25_26',
+            'matchs_25_26', 'entrees_25_26', 'titularisations_25_26', 'buts_25_26',
+            'penaltys_25_26', 'passes_d_25_26', 'clean_sheets_25_26','buts_encaisses_25_26', 
+            'minutes_24_25', 'matchs_24_25', 'entrees_24_25', 'titularisations_24_25', 
+            'buts_24_25', 'penaltys_24_25', 'passes_d_24_25', 'clean_sheets_24_25', 
+            'buts_encaisses_24_25', 'minutes_23_24', 'matchs_23_24', 'entrees_23_24', 
+            'titularisations_23_24', 'buts_23_24', 'penaltys_23_24',
+            'passes_d_23_24', 'clean_sheets_23_24', 'buts_encaisses_23_24', 
+            'nb_blessures_3ans', 'matchs_manques_3ans', 'jours_blessures', 'nb_trophees_3ans',
+            'classement_club' 
+        ]
+
+        cols_cat_2 = ['position', 'nationalite', 'pied_fort', 'club', 'ligue'] 
+        
+        modele_2_reg = best_model_2.named_steps['regressor']
+        prepro_2 = best_model_2.named_steps['preprocessor']
+
+        noms_cat_2 = prepro_2.named_transformers_['cat'].get_feature_names_out(cols_cat_2)
+        toutes_les_cols_2 = np.concatenate([cols_num_2, noms_cat_2])
+
+        importances_2 = modele_2_reg.feature_importances_
+        
+        if len(toutes_les_cols_2) == len(importances_2):
+            df_imp_2 = pd.DataFrame({'Variable': toutes_les_cols_2, 'Importance': importances_2})
+            
+            df_top10_m2 = df_imp_2.sort_values(by='Importance', ascending=True).tail(10)
+
+            fig_imp_2 = px.bar(
+                df_top10_m2, 
+                x='Importance', 
+                y='Variable', 
+                orientation='h',
+                title="Top 10 des facteurs déterminants - Modèle 2 (Club + ligue)",
+                text_auto='.1%' 
+            )
+            
+            fig_imp_2.update_traces(marker_color='#c084fc', textposition='outside')
+            fig_imp_2.update_layout(xaxis_title="Impact sur la valeur (%)", yaxis_title="")
+            
+            st.plotly_chart(fig_imp_2, use_container_width=True)
+            
+        else:
+            st.warning(f"Note : Le nombre de colonnes ({len(toutes_les_cols_2)}) diffère des scores ({len(importances_2)}).")
+
+    except Exception as e:
+        st.error(f"Erreur lors de l'analyse du Modèle 2 : {e}")
 
     st.info("""
             **Analyse du modèle :**

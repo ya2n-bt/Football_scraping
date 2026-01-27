@@ -33,9 +33,9 @@ variable_num = [
     'buts_encaisses_24_25', 'minutes_23_24', 'matchs_23_24', 'entrees_23_24', 
     'titularisations_23_24', 'buts_23_24', 'penaltys_23_24',
     'passes_d_23_24', 'clean_sheets_23_24', 'buts_encaisses_23_24', 
-    'nb_blessures_3ans', 'matchs_manques_3ans', 'jours_blessures', 'nb_trophees_3ans'
+    'nb_blessures_3ans', 'matchs_manques_3ans', 'jours_blessures', 'nb_trophees_3ans', 'classement_club'
 ]
-variable_cat = ['position', 'nationalite', 'pied_fort'] 
+variable_cat = ['position', 'nationalite', 'pied_fort', 'club', 'ligue'] 
 
 cols_num_reelles = [c for c in variable_num if c in df_train.columns]
 cols_cat_reelles = [c for c in variable_cat if c in df_train.columns]
@@ -137,8 +137,8 @@ print(f"   - R² Final : {final_test_r2:.4f}")
 print(f"   - Erreur moyenne (MAE) : {final_test_mae:,.0f} €")
 
 # --- SAUVEGARDE DU MODÈLE ---
-joblib.dump(winner_pipeline, 'modele_final.pkl')
-print(f"\n💾 Modèle sauvegardé sous 'modele_final.pkl'")
+joblib.dump(winner_pipeline, 'modele_final_2.pkl')
+print(f"\n💾 Modèle sauvegardé sous 'modele_final_2.pkl'")
 
 # ---  PRÉDICTIONS SUR LE DF COMPLET ---
 df_complet = df.copy()
@@ -166,5 +166,5 @@ def definir_statut(row):
 print("Application des statuts...")
 df_complet['statut'] = df_complet.apply(definir_statut, axis=1)
 
-df_complet.to_csv('dataset_avec_predictions_final.csv', index=False)
-print("✅ Données complètes sauvegardées sous 'dataset_avec_predictions_final.csv'")
+df_complet.to_csv('dataset_avec_predictions_final_2.csv', index=False)
+print("✅ Données complètes sauvegardées sous 'dataset_avec_predictions_final_2.csv'")
