@@ -512,7 +512,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
         * **Fiabilité & Palmarès :** Historique des blessures, nombre de trophées récents, régularité...
         * **Contexte Contractuel :** Durée restante de contrat, âge, ligue, poste...
         
-        Pour distinguer le talent brut de la valeur marchande, nous avons confronté un modèle "pure performance" à un modèle "contexte global". L'objectif est d'isoler l'impact du club et de la ligue afin d'identifier les joueurs dont le prix est artificiellement gonflé par leur environnement sportif. (l'objectif pour le recruteur est de cibler les bonnes affaires ou les profils surpayés)
+        Pour distinguer le talent brut de la valeur marchande, nous avons confronté un modèle "pure performance" à un modèle "contexte global". L'objectif est d'isoler l'impact du club et de la ligue afin d'identifier les joueurs dont le prix est artificiellement gonflé par leur environnement sportif (l'objectif pour le recruteur est de cibler les bonnes affaires ou les profils surpayés).
         """)
 
     st.markdown("---")
@@ -823,8 +823,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
     with kpi3:
         st.metric(
             label="Nombre de variables explicatives", 
-            value="38",
-            help="Nombre de joueurs utilisés pour ces calculs."
+            value="38"
         )
 
     st.write("")
@@ -850,7 +849,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
         st.metric(
             label="Nombre de variables explicatives", 
             value="41",
-            help="Nombre de joueurs utilisés pour ces calculs."
+            help="Ajout des variables 'club' et 'ligue' et 'classement_club."
         )
 
     st.write("")
@@ -898,7 +897,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
 
     # --- TOP 10 VARIABLES IMPORTANTES / MODÈLE 1 ---
 
-    st.subheader("Features importantes du modèle")
+    st.subheader("Features importantes des modèles")
 
     best_model = joblib.load(chemin_modele)
 
@@ -1007,12 +1006,14 @@ elif choix_page == "💰 Estimation Valeur Réelle":
         st.error(f"Erreur lors de l'analyse du Modèle 2 : {e}")
 
     st.info("""
-            **Analyse du modèle :**
+            **Analyse du modèle 1:**
             
             On constate que le modèle ne se focalise pas uniquement sur les statistiques individuelles (buts, passes). 
             Il priorise deux axes majeurs pour fixer le prix :
             1. **Le Palmarès (19%)** : Avoir gagné des trophées récemment augmente drastiquement la valeur.
             2. **La Fiabilité & Régularité (~22%)** : Le cumul des matchs joués sur les deux dernières saisons est déterminant. Un joueur disponible vaut plus cher qu'un joueur souvent blessé ou remplaçant.
+            
+            Pour le second modèle, le palmarès reste crucial, mais l'**influence du club** et de la **ligue** deviennent des facteurs majeurs.
             """)
     
 # --- PAGE 3 : PÉPITES ---

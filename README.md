@@ -45,4 +45,20 @@ L'amélioration première serait de rendre automatique le scraping des données 
 
 ---
 
+## Comment lancer l'application ? 
+
+1. **Récupérer le projet**  
+   Clonez ce dépôt avec `git clone` ou téléchargez simplement le répertoire.
+2. **Installer les prérequis**  
+   Assurez-vous d'avoir **Python ≥ 3.12** et **uv** installé.  
+   Pour installer uv :  "pip install uv"
+3. **Synchroniser l'environnement**
+   Depuis la racine du projet (le dossier contenant pyproject.toml), lancez : "uv sync"
+4. **Aller dans le dossier de l'application**
+   Toujours à partir de la racine, naviguez vers le dossier de l'application Streamlit : "cd Application"
+5. **Lancer l'application**
+   Une fois dans le bon dossier, exécutez : "uv run streamlit run app.py"
+
+---
+
 Développé par Yann BROCHET et Iruomachi IRUOMAH – Master 2 Économie de l'entreprise et des marchés – 2025/2026
