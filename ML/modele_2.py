@@ -33,9 +33,9 @@ variable_num = [
     'buts_encaisses_24_25', 'minutes_23_24', 'matchs_23_24', 'entrees_23_24', 
     'titularisations_23_24', 'buts_23_24', 'penaltys_23_24',
     'passes_d_23_24', 'clean_sheets_23_24', 'buts_encaisses_23_24', 
-    'nb_blessures_3ans', 'matchs_manques_3ans', 'jours_blessures', 'nb_trophees_3ans'
+    'nb_blessures_3ans', 'matchs_manques_3ans', 'jours_blessures', 'nb_trophees_3ans', 'classement_club'
 ]
-variable_cat = ['position', 'nationalite', 'pied_fort'] 
+variable_cat = ['position', 'nationalite', 'pied_fort', 'club', 'ligue'] 
 
 cols_num_reelles = [c for c in variable_num if c in df_train.columns]
 cols_cat_reelles = [c for c in variable_cat if c in df_train.columns]
@@ -86,11 +86,11 @@ models_config = {
 }
 
 best_overall_cv_score = -np.inf 
-winner_name = ""
+meilleur_modele = ""
 comparison_results = []
 
 for name, config in models_config.items():
-    print(f"\n🔎 Recherche intensive pour : {name}")
+    print(f"Modèle : {name}")
     pipe = Pipeline(steps=[('preprocessor', preprocessor), ('regressor', config["model"])])
     
     grid_search = GridSearchCV(pipe, config["grid"], cv=10, scoring='r2', n_jobs=-1, verbose=1)
@@ -111,41 +111,36 @@ for name, config in models_config.items():
     
     if cv_r2_score > best_overall_cv_score:
         best_overall_cv_score = cv_r2_score
-        winner_name = name
-        winner_pipeline = grid_search.best_estimator_
+        meilleur_modele = name
+        pipeline_meilleur_modele = grid_search.best_estimator_
 
-# --- AFFICHAGE DU TABLEAU DE COMPARAISON (SANS LES DONNÉES TEST) ---
+# --- TABLEAU DE COMPARAISON ---
 df_res = pd.DataFrame(comparison_results).sort_values(by="R² moyen (CV)", ascending=False)
-print("\n" + "="*70)
-print("📊 COMPARAISON DES MODÈLES (Validation Croisée sur 10 plis)")
-print("="*70)
+print("Comparaison des modèles :")
 df_res_display = df_res[["Modèle", "R² moyen (CV)", "MAE moyenne (CV)"]].copy()
 df_res_display["MAE moyenne (CV)"] = df_res_display["MAE moyenne (CV)"].map("{:,.0f} €".format)
 print(df_res_display)
 
-# --- ÉVALUATION FINALE (UNE SEULE FOIS SUR LE TEST SET) ---
+# --- ÉVALUATION DU MEILLEUR MODÈlE ---
 print("\n" + "="*70)
-print(f"🏆 ÉVALUATION FINALE DU GAGNANT : {winner_name}")
+print(f"Évaluation du meilleur modèle sur données test : {meilleur_modele}")
 print("="*70)
 
-y_pred_final = winner_pipeline.predict(X_test)
+y_pred_final = pipeline_meilleur_modele.predict(X_test)
 final_test_r2 = r2_score(y_test, y_pred_final)
 final_test_mae = mean_absolute_error(y_test, y_pred_final)
 
-print(f"✅ Performance sur le Test Set (Données jamais vues) :")
 print(f"   - R² Final : {final_test_r2:.4f}")
 print(f"   - Erreur moyenne (MAE) : {final_test_mae:,.0f} €")
 
 # --- SAUVEGARDE DU MODÈLE ---
-joblib.dump(winner_pipeline, 'modele_final.pkl')
-print(f"\n💾 Modèle sauvegardé sous 'modele_final.pkl'")
+joblib.dump(pipeline_meilleur_modele, 'modele_final_2.pkl')
+print(f"\n💾 Modèle sauvegardé sous 'modele_final_2.pkl'")
 
 # ---  PRÉDICTIONS SUR LE DF COMPLET ---
 df_complet = df.copy()
 
-print("\nLancement des prédictions pour tous les joueurs...")
-
-df_complet['valeur_estimee'] = winner_pipeline.predict(df_complet[cols_utiles])
+df_complet['valeur_estimee'] = pipeline_meilleur_modele.predict(df_complet[cols_utiles])
 df_complet['valeur_estimee'] = df_complet['valeur_estimee'].round(0)
 
 df_complet['diff_valeur'] = df_complet['valeur_estimee'] - df_complet['valeur']
@@ -163,8 +158,7 @@ def definir_statut(row):
     else:
         return "Sur-coté"
 
-print("Application des statuts...")
 df_complet['statut'] = df_complet.apply(definir_statut, axis=1)
 
-df_complet.to_csv('dataset_avec_predictions_final.csv', index=False)
-print("✅ Données complètes sauvegardées sous 'dataset_avec_predictions_final.csv'")
+df_complet.to_csv('dataset_avec_predictions_final_2.csv', index=False)
+print("Données complètes sauvegardées sous 'dataset_avec_predictions_final_2.csv'")

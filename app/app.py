@@ -4,7 +4,6 @@ import joblib
 import numpy as np
 import os
 import plotly.graph_objects as go
-from sklearn.metrics import r2_score, mean_absolute_error
 import plotly.express as px
 
 # --- CONFIGURATION DE LA PAGE ---
@@ -236,7 +235,7 @@ if choix_page == "👤 Profil Joueur":
 
     joueur_data = None 
 
-    # --- OPTION A : PAR FILTRES ---
+    # --- PAR FILTRES ---
     if mode_recherche == "Recherche par Filtres":
         col_ligue, col_club, col_joueur = st.columns(3)
 
@@ -295,7 +294,7 @@ if choix_page == "👤 Profil Joueur":
         if joueur_sel:
             joueur_data = df_club[df_club['nom'] == joueur_sel].iloc[0]
 
-    # --- OPTION B : PAR NOM ---
+    # --- PAR NOM ---
     else:
         if 'label_recherche' not in df.columns:
             df['label_recherche'] = df['nom'] + " (" + df['club'] + ")"
@@ -313,7 +312,6 @@ if choix_page == "👤 Profil Joueur":
         if choix_recherche:
             joueur_data = df[df['label_recherche'] == choix_recherche].iloc[0]
 
-    # --- GESTION DE L'ATTENTE ---
     if joueur_data is None:
         if mode_recherche == "Recherche par Filtres":
             st.info("👆 Commencez par sélectionner une **Ligue**.")
@@ -498,7 +496,6 @@ if choix_page == "👤 Profil Joueur":
         st.caption("Comparaison au meilleur profil de la base (Saison 2024-2025).")
 
 # --- PAGE 2 : ESTIMATION VALEUR RÉELLE ---
-
 elif choix_page == "💰 Estimation Valeur Réelle":
     st.header("Valeur : Réel vs Estimée")
 
@@ -662,10 +659,10 @@ elif choix_page == "💰 Estimation Valeur Réelle":
         valeur_modele = joueur['valeur_estimee']
         
         if pd.isna(valeur_modele):
-            txt_ia = "Erreur"
+            txt_modele = "Erreur"
             delta_html = ""
         else:
-            txt_ia = f"{valeur_modele:,.0f} €".replace(',', ' ')
+            txt_modele = f"{valeur_modele:,.0f} €".replace(',', ' ')
             
             if valeur_reelle_num > 0:
                 delta = valeur_modele - valeur_reelle_num
@@ -685,7 +682,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
             border-radius: 10px;
             height: 100%;">
             <p style="margin:0; opacity: 0.7; font-size: 0.9em; font-weight: bold;">VALEUR MODÈLE</p>
-            <h2 style="margin:5px 0;">{txt_ia}</h2>
+            <h2 style="margin:5px 0;">{txt_modele}</h2>
             <p style="margin:0; font-size: 0.9em;">{delta_html}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -756,10 +753,10 @@ elif choix_page == "💰 Estimation Valeur Réelle":
         valeur_modele2 = joueur2['valeur_estimee']
         
         if pd.isna(valeur_modele2):
-            txt_ia2 = "Erreur"
+            txt_modele2 = "Erreur"
             delta_html2 = ""
         else:
-            txt_ia2 = f"{valeur_modele2:,.0f} €".replace(',', ' ')
+            txt_modele2 = f"{valeur_modele2:,.0f} €".replace(',', ' ')
             
             if valeur_reelle_num2 > 0:
                 delta2 = valeur_modele2 - valeur_reelle_num2
@@ -773,7 +770,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
         st.markdown(f"""
         <div style="text-align: center; border: 2px solid #ffffff; padding: 15px; border-radius: 10px; height: 100%;">
             <p style="margin:0; opacity: 0.7; font-size: 0.9em; font-weight: bold;">ESTIMATION (COMPLÈTE)</p>
-            <h2 style="margin:5px 0;">{txt_ia2}</h2>
+            <h2 style="margin:5px 0;">{txt_modele2}</h2>
             <p style="margin:0; font-size: 0.9em;">{delta_html2}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1080,7 +1077,7 @@ elif choix_page == "💎 Pépites":
 
         st.markdown(f"### 🎯 Top 20 des joueurs sous-côtés ")
         
-        max_val = top_20['plus_value'].max() if len(top_20) > 0 else 100 # Sécurité pour la barre de progression (éviter crash si liste vide)
+        max_val = top_20['plus_value'].max() if len(top_20) > 0 else 100 
 
         st.dataframe(
             tableau_final,
@@ -1124,8 +1121,8 @@ elif choix_page == "🔮 Simulateur":
         liste_joueurs = sorted(df['nom'].unique())
 
         dict_affichage = {}
-        for index, row in df.iterrows():
-            dict_affichage[row['nom']] = f"{row['nom']} ({row['position']} - {row['club']})"
+        for index, ligne in df.iterrows():
+            dict_affichage[ligne['nom']] = f"{ligne['nom']} ({ligne['position']} - {ligne['club']})"
 
         joueur_simu = st.selectbox(
             "Sélectionnez un joueur :", 
@@ -1134,7 +1131,7 @@ elif choix_page == "🔮 Simulateur":
         
         )
 
-        row_original = df[df['nom'] == joueur_simu].iloc[0]
+        ligne_original = df[df['nom'] == joueur_simu].iloc[0]
 
         st.markdown("---")
 
@@ -1148,18 +1145,18 @@ elif choix_page == "🔮 Simulateur":
             st.markdown("##### 👤 Profil & Contrat")
             
             nouvel_age = st.number_input(
-                "Âge", 
-                value=int(row_original['age']), 
-                step=1, 
-                min_value=15, max_value=45
+            "Âge", 
+            value=int(ligne_original['age']), 
+            step=1, 
+            min_value=15, max_value=45
             )
             
-            annees_restantes = row_original['fin_contrat'] / 365
+            annees_restantes = ligne_original['fin_contrat'] / 365
             nouvelle_duree = st.slider(
-                "Années de contrat restantes", 
-                min_value=0.0, max_value=5.0, 
-                value=float(annees_restantes),
-                step=0.5
+            "Années de contrat restantes", 
+            min_value=0.0, max_value=5.0, 
+            value=float(annees_restantes),
+            step=0.5
             )
             nouveaux_jours_contrat = nouvelle_duree * 365
 
@@ -1168,14 +1165,14 @@ elif choix_page == "🔮 Simulateur":
             st.markdown("##### ⏱️ Temps de jeu (24/25)")
             
             nouveaux_matchs = st.slider(
-                "Matchs joués", 
-                min_value=0, max_value=80, 
-                value=int(row_original['matchs_24_25'])
+            "Matchs joués", 
+            min_value=0, max_value=80, 
+            value=int(ligne_original['matchs_24_25'])
             )
             
             # --- CORRECTION DU CALCUL DES MINUTES ---
-            minutes_actuelles = row_original['minutes_24_25']
-            matchs_actuels = row_original['matchs_24_25']
+            minutes_actuelles = ligne_original['minutes_24_25']
+            matchs_actuels = ligne_original['matchs_24_25']
             
             if matchs_actuels > 0 and minutes_actuelles > 0:
                 ratio_min_match = minutes_actuelles / matchs_actuels
@@ -1194,39 +1191,39 @@ elif choix_page == "🔮 Simulateur":
             st.markdown("##### 🏆 Stats & Palmarès")
             
             nouveaux_trophees = st.number_input(
-                "Trophées (3 dernières années)",
-                min_value=0,
-                value=int(row_original['nb_trophees_3ans']),
-                step=1
+            "Trophées (3 dernières années)",
+            min_value=0,
+            value=int(ligne_original['nb_trophees_3ans']),
+            step=1
             )
             
-            est_gardien = "Gardien" in str(row_original['position'])
+            est_gardien = "Gardien" in str(ligne_original['position'])
             
             if est_gardien:
                 nouveaux_clean_sheets = st.number_input(
                     "Clean Sheets", 
                     min_value=0, max_value=nouveaux_matchs,
-                    value=int(row_original['clean_sheets_24_25'])
+                    value=int(ligne_original['clean_sheets_24_25'])
                 )
                 nouveaux_buts_encaisses = st.number_input(
                     "Buts Encaissés", min_value=0,
-                    value=int(row_original['buts_encaisses_24_25'])
+                    value=int(ligne_original['buts_encaisses_24_25'])
                 )
                 nouveaux_buts = 0
                 nouvelles_passes = 0
             else:
                 nouveaux_buts = st.number_input(
                     "Buts marqués", min_value=0, 
-                    value=int(row_original['buts_24_25'])
+                    value=int(ligne_original['buts_24_25'])
                 )
                 nouvelles_passes = st.number_input(
                     "Passes décisives", min_value=0, 
-                    value=int(row_original['passes_d_24_25'])
+                    value=int(ligne_original['passes_d_24_25'])
                 )
                 nouveaux_clean_sheets = 0
                 nouveaux_buts_encaisses = 0
 
-        df_simule = pd.DataFrame(row_original).T 
+        df_simule = pd.DataFrame(ligne_original).T 
         
         df_simule['age'] = nouvel_age
         df_simule['fin_contrat'] =  nouveaux_jours_contrat
@@ -1243,7 +1240,7 @@ elif choix_page == "🔮 Simulateur":
 
         try:
             prix_simule = best_model.predict(df_simule)[0]
-            prix_actuel_ia = row_original['valeur_estimee']
+            prix_actuel_ia = ligne_original['valeur_estimee']
             
             delta_prix = prix_simule - prix_actuel_ia
             variation_percent = (delta_prix / prix_actuel_ia) * 100 if prix_actuel_ia > 0 else 0
@@ -1271,7 +1268,7 @@ elif choix_page == "🔮 Simulateur":
             with col_res_3:
                 couleur = "green" if variation_percent > 0 else "red"
                 if variation_percent == 0: couleur = "gray"
-                
+            
                 st.markdown(f"""
                 ### Impact : :{couleur}[{variation_percent:+.2f}%]
                 """)

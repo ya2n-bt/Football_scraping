@@ -45,7 +45,8 @@ def scraper_un_joueur(page, url_joueur):
             "Valeur": s.scrap_valeur(page),
             "Nombre de sélections internationales": s.scrap_nombre_selections_internationales(page),
             
-            # SAISON 25/26 
+            # --- STATS 25/26 --- 
+
             "Minutes jouées 25/26": s.scrap_minutes_jouees_25_26(page),
             "Nombre de matchs 25/26": s.scrap_nombre_matchs_25_26(page),
             "Nombre d'entrées en jeu 25/26": s.scrap_entrees_en_jeu_25_26(page),
@@ -56,7 +57,8 @@ def scraper_un_joueur(page, url_joueur):
             "Nombre clean de sheets 25/26": s.scrap_nombre_clean_sheets_25_26(page),
             "Nombre de buts encaissés 25/26": s.scrap_nombre_buts_encaisses_25_26(page),
 
-            # SAISON 24/25 
+            # --- STATS 24/25 ---
+
             "Minutes jouées 24/25": s.scrap_minutes_jouees_24_25(page),
             "Nombre de matchs 24/25": s.scrap_nombre_matchs_24_25(page),
             "Nombre d'entrées en jeu 24/25": s.scrap_entrees_en_jeu_24_25(page),
@@ -67,7 +69,8 @@ def scraper_un_joueur(page, url_joueur):
             "Nombre clean de sheets 24/25": s.scrap_nombre_clean_sheets_24_25(page),
             "Nombre de buts encaissés 24/25": s.scrap_nombre_buts_encaisses_24_25(page),
 
-            # SAISON 23/24 
+            # --- STATS 23/24 --- 
+
             "Minutes jouées 23/24": s.scrap_minutes_jouees_23_24(page),
             "Nombre de matchs 23/24": s.scrap_nombre_matchs_23_24(page),
             "Nombre d'entrées en jeu 23/24": s.scrap_entrees_en_jeu_23_24(page),
@@ -147,15 +150,13 @@ def run_equipe():
         browser.close()
         
         # --- BILAN FINAL ---
-        print("-" * 30)
-        print(f"SCRAPING TERMINÉ")
+        print(f"Scraping terminé : ")
         print(f"Succès : {nb_succes}")
         print(f"Erreurs : {nb_erreurs}")
         if erreurs_logs:
             print("Joueurs échoués :")
             for err_url in erreurs_logs:
                 print(f" - {err_url}")
-        print("-" * 30)
 
         return equipe_data
 

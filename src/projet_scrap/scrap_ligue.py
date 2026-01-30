@@ -45,7 +45,8 @@ def scraper_un_joueur(page, url_joueur, club_infos=None):
             "Valeur": s.scrap_valeur(page),
             "Nombre de sélections internationales": s.scrap_nombre_selections_internationales(page),
             
-            # SAISON 25/26
+            # --- STATS 25/26 ---
+
             "Minutes jouées 25/26": s.scrap_minutes_jouees_25_26(page),
             "Nombre de matchs 25/26": s.scrap_nombre_matchs_25_26(page),
             "Nombre d'entrées en jeu 25/26": s.scrap_entrees_en_jeu_25_26(page),
@@ -56,7 +57,8 @@ def scraper_un_joueur(page, url_joueur, club_infos=None):
             "Nombre clean de sheets 25/26": s.scrap_nombre_clean_sheets_25_26(page),
             "Nombre de buts encaissés 25/26": s.scrap_nombre_buts_encaisses_25_26(page),
 
-            # SAISON 24/25
+            # --- STATS 24/25 ---
+
             "Minutes jouées 24/25": s.scrap_minutes_jouees_24_25(page),
             "Nombre de matchs 24/25": s.scrap_nombre_matchs_24_25(page),
             "Nombre d'entrées en jeu 24/25": s.scrap_entrees_en_jeu_24_25(page),
@@ -67,7 +69,8 @@ def scraper_un_joueur(page, url_joueur, club_infos=None):
             "Nombre clean de sheets 24/25": s.scrap_nombre_clean_sheets_24_25(page),
             "Nombre de buts encaissés 24/25": s.scrap_nombre_buts_encaisses_24_25(page),
 
-            # SAISON 23/24
+            # --- STATS 23/24 ---
+
             "Minutes jouées 23/24": s.scrap_minutes_jouees_23_24(page),
             "Nombre de matchs 23/24": s.scrap_nombre_matchs_23_24(page),
             "Nombre d'entrées en jeu 23/24": s.scrap_entrees_en_jeu_23_24(page),
@@ -102,21 +105,19 @@ def scraper_un_joueur(page, url_joueur, club_infos=None):
         return JoueurStats(**raw_data)
 
     except Exception as e:
-        print(f"❌ Erreur sur {url_joueur}: {e}")
+        print(f"Erreur sur {url_joueur}: {e}")
         return None
 
 def scraper_club(page, url_club):
-    print(f"TRAITEMENT DU CLUB : {url_club}")
+    print(f"Traitement du club : {url_club}")
     
     page.goto(url_club, wait_until="domcontentloaded", timeout=60000)
     
-    print("Récupération des infos du club...")
     infos_du_club = {
         "valeur": sci.scrap_valeur_totale_club(page),
         "classement": sci.scrap_classement_ligue(page)
     }
 
-    print("Récupération des joueurs...")
     page.wait_for_selector("td.hauptlink a", timeout=15000)
     liens = page.locator("td.hauptlink a").all()
     urls_joueurs = set()
@@ -151,10 +152,8 @@ def run_ligue_1():
         page = context.new_page()
         page.route(re.compile(r"(.png|.jpg|.jpeg|.svg|.woff|.css)"), lambda route: route.abort())
 
-        print("Navigation vers la Ligue 1")
         page.goto(URL_LIGUE, wait_until="domcontentloaded")
         
-        print("Récupération de la liste des clubs")
         liens_clubs = page.locator("td.hauptlink.no-border-links a").all()
         
         urls_clubs = set()
@@ -164,8 +163,7 @@ def run_ligue_1():
                 full_url = "https://www.transfermarkt.fr" + href
                 urls_clubs.add(full_url)
         
-        print(f"✅ {len(urls_clubs)} clubs trouvés. Début du scraping général.")
-        print("-" * 40)
+        print(f"{len(urls_clubs)} clubs trouvés, début du scraping")
 
         for index_club, url_club in enumerate(urls_clubs):
             print(f"\nCLUB {index_club + 1}/{len(urls_clubs)}")
@@ -179,7 +177,6 @@ def run_ligue_1():
             print(f"Données sauvegardées (Total joueurs: {len(data_globale)})")
 
             pause = random.uniform(5, 10)
-            print(f"💤 Pause changement de club ({int(pause)}s)...")
             time.sleep(pause)
 
         browser.close()
@@ -193,4 +190,4 @@ if __name__ == "__main__":
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(data_finale, f, indent=4, ensure_ascii=False)
 
-    print(f"\n🎉 TERMINE ! Données sauvegardées dans {output_file}")
+    print(f"Scraping terminé : données sauvegardées dans {output_file}")
