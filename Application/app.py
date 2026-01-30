@@ -769,7 +769,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
 
         st.markdown(f"""
         <div style="text-align: center; border: 2px solid #ffffff; padding: 15px; border-radius: 10px; height: 100%;">
-            <p style="margin:0; opacity: 0.7; font-size: 0.9em; font-weight: bold;">ESTIMATION (COMPLÈTE)</p>
+            <p style="margin:0; opacity: 0.7; font-size: 0.9em; font-weight: bold;">VALEUR MODÈLE</p>
             <h2 style="margin:5px 0;">{txt_modele2}</h2>
             <p style="margin:0; font-size: 0.9em;">{delta_html2}</p>
         </div>
@@ -793,7 +793,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
 
         st.markdown(f"""
         <div style="text-align: center; border: 2px solid {couleur_bordure2}; padding: 15px; border-radius: 10px; height: 100%;">
-            <p style="margin:0; color: {couleur_bordure2}; font-size: 0.9em; font-weight: bold;">VERDICT MARCHÉ</p>
+            <p style="margin:0; color: {couleur_bordure2}; font-size: 0.9em; font-weight: bold;">VERDICT</p>
             <h2 style="margin:5px 0; color: {couleur_bordure2};">{emoji2} {statut2}</h2>
             <p style="margin:0; opacity: 0.7; font-size: 0.8em;">{desc2}</p>
         </div>
@@ -835,21 +835,21 @@ elif choix_page == "💰 Estimation Valeur Réelle":
     with kpi11:
         st.metric(
             label="R² (Précision)", 
-            value=f"80,6%", 
+            value=f"84,72%", 
         )
         
     with kpi22:
         st.metric(
             label="Écart Moyen (MAE)", 
-            value="4 538 345 €",
+            value="4 021 781 €",
             help="En moyenne, le modèle surestime ou sous-estime les joueurs de ce montant."
         )
     
     with kpi33:
         st.metric(
             label="Nombre de variables explicatives", 
-            value="41",
-            help="Ajout des variables 'club' et 'ligue' et 'classement_club."
+            value="42",
+            help="Ajout des variables 'club', 'ligue', 'classement_club' et 'valeur_club'."
         )
 
     st.write("")
@@ -857,7 +857,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
     st.info(f"""
     **Comparaison des modèles :**
     
-    En rajoutant les variables de **club** et de **ligue**, le modèle explique une plus grande partie de la variance des prix (80,6% vs 71,12%).
+    En rajoutant les variables de **club** et de **ligue**, le modèle explique une plus grande partie de la variance des prix (84,72% vs 71,12%).
     
     Bien que l'influence du club et de la ligue soit indéniable sur la valeur marchande, notre objectif est de neutraliser ces variables contextuelles afin d'isoler et d'évaluer uniquement la performance sportive du joueur. Nous portons donc notre regard sur le premier modèle
     """)
@@ -967,7 +967,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
             'titularisations_23_24', 'buts_23_24', 'penaltys_23_24',
             'passes_d_23_24', 'clean_sheets_23_24', 'buts_encaisses_23_24', 
             'nb_blessures_3ans', 'matchs_manques_3ans', 'jours_blessures', 'nb_trophees_3ans',
-            'classement_club' 
+            'classement_club', 'valeur_club' 
         ]
 
         cols_cat_2 = ['position', 'nationalite', 'pied_fort', 'club', 'ligue'] 
@@ -1013,7 +1013,7 @@ elif choix_page == "💰 Estimation Valeur Réelle":
             1. **Le Palmarès (19%)** : Avoir gagné des trophées récemment augmente drastiquement la valeur.
             2. **La Fiabilité & Régularité (~22%)** : Le cumul des matchs joués sur les deux dernières saisons est déterminant. Un joueur disponible vaut plus cher qu'un joueur souvent blessé ou remplaçant.
             
-            Pour le second modèle, le palmarès reste crucial, mais l'**influence du club** et de la **ligue** deviennent des facteurs majeurs.
+            Pour le second modèle, c'est la valeur du club qui explique en grande partie le prix du joueur, c'est ensuite l'âge et les performances individuelles.
             """)
     
 # --- PAGE 3 : PÉPITES ---

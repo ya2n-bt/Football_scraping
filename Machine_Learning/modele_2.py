@@ -33,7 +33,7 @@ variable_num = [
     'buts_encaisses_24_25', 'minutes_23_24', 'matchs_23_24', 'entrees_23_24', 
     'titularisations_23_24', 'buts_23_24', 'penaltys_23_24',
     'passes_d_23_24', 'clean_sheets_23_24', 'buts_encaisses_23_24', 
-    'nb_blessures_3ans', 'matchs_manques_3ans', 'jours_blessures', 'nb_trophees_3ans', 'classement_club'
+    'nb_blessures_3ans', 'matchs_manques_3ans', 'jours_blessures', 'nb_trophees_3ans', 'classement_club', 'valeur_club'
 ]
 variable_cat = ['position', 'nationalite', 'pied_fort', 'club', 'ligue'] 
 
@@ -135,7 +135,7 @@ print(f"   - Erreur moyenne (MAE) : {final_test_mae:,.0f} €")
 
 # --- SAUVEGARDE DU MODÈLE ---
 joblib.dump(pipeline_meilleur_modele, 'modele_final_2.pkl')
-print(f"\n💾 Modèle sauvegardé sous 'modele_final_2.pkl'")
+print(f"Modèle sauvegardé sous 'modele_final_2.pkl'")
 
 # ---  PRÉDICTIONS SUR LE DF COMPLET ---
 df_complet = df.copy()
