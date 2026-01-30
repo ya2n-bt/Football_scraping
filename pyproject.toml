@@ -1,22 +1,24 @@
 [project]
 name = "projet-scrap"
 version = "0.1.0"
-description = "Add your description here"
+description = "Outil de scouting football - Comparaison Valeur Sportive vs Marché"
 readme = "README.md"
 authors = [
     { name = "ya2n-bt", email = "yann.brochet@etu.univ-tours.fr" }
 ]
-requires-python = "~=3.12"
+# Ici on force STRICTEMENT Python 3.12.x pour éviter les conflits
+requires-python = ">=3.12,<3.13"
+
 dependencies = [
-    "joblib>=1.5.3",
     "numpy==1.26.4",
-    "pandas>=2.3.3",
-    "playwright>=1.55.0",
-    "plotly>=6.5.2",
-    "pydantic>=2.12.5",
     "scikit-learn==1.4.2",
-    "streamlit>=1.52.2",
-    "xgboost>=3.1.3",
+    "pandas>=2.2.0",
+    "playwright>=1.40.0",
+    "plotly>=5.18.0",
+    "pydantic>=2.5.0",
+    "joblib>=1.3.2",
+    "streamlit>=1.30.0",
+    "xgboost>=2.0.0",
 ]
 
 [project.scripts]
