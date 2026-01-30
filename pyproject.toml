@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "ya2n-bt", email = "yann.brochet@etu.univ-tours.fr" }
 ]
-# Ici on force STRICTEMENT Python 3.12.x pour éviter les conflits
+
 requires-python = ">=3.12,<3.13"
 
 dependencies = [
