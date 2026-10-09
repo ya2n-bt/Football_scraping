@@ -70,80 +70,85 @@ best_model_2 = load_modele_2()
 # --- CRÉATION DE LA BARRE LATÉRALE ---
 
 with st.sidebar:
-    st.markdown("""
-        <style>
-        .nav-title {
-            color: white !important;
-            font-size: 38px !important;
-            font-weight: 800 !important;
-            text-align: center !important;
-            margin-bottom: 25px !important;
-        }
+        st.markdown("""
+            <style>
+            .nav-title {
+                color: white !important;
+                font-size: 38px !important;
+                font-weight: 800 !important;
+                text-align: center !important;
+                margin-bottom: 25px !important;
+            }
 
-        [data-testid="stSidebar"] [role="radiogroup"] {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            gap: 12px !important;
-        }
+            [data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
+                display: none !important;
+            }
 
-        [data-testid="stSidebar"] [role="radiogroup"] label {
-            background-color: #3867d6 !important;
-            border-radius: 30px !important;
-            padding: 12px 0px !important;
-            width: 85% !important;
-            box-sizing: border-box !important;
-            border: 2px solid transparent !important;
+            [data-testid="stSidebar"] [role="radiogroup"] {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 12px !important;
+            }
 
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
+            [data-testid="stSidebar"] [role="radiogroup"] label {
+                background-color: #3867d6 !important;
+                border-radius: 30px !important;
+                padding: 12px 0px !important; 
+                width: 85% !important; 
+                
+                display: flex !important;
+                align-items: center !important;     
+                justify-content: center !important; 
+                
+                cursor: pointer !important;
+                transition: all 0.3s ease !important;
+                border: none !important;
+            }
 
-            cursor: pointer !important;
-            transition: all 0.3s ease !important;
-        }
+            [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
+                display: none !important;
+            }
 
-        [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
-            display: none !important;
-        }
+            [data-testid="stSidebar"] [role="radiogroup"] label div[data-testid="stMarkdownContainer"] {
+                width: 100% !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
 
-        [data-testid="stSidebar"] [role="radiogroup"] label div[data-testid="stMarkdownContainer"] {
-            width: 100% !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-        }
+            [data-testid="stSidebar"] [role="radiogroup"] label p {
+                color: white !important;
+                font-size: 17px !important;
+                font-weight: 700 !important;
+                
+                margin: 0 !important;     
+                padding: 0 !important;
+                width: 100% !important;
+                text-align: center !important;
+                
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                line-height: 1 !important;
+            }
 
-        [data-testid="stSidebar"] [role="radiogroup"] label p {
-            color: white !important;
-            font-size: 17px !important;
-            font-weight: 700 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            text-align: center !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            line-height: 1 !important;
-        }
+            [data-testid="stSidebar"] [role="radiogroup"] label:hover {
+                background-color: #4b7bec !important;
+                transform: scale(1.05) !important;
+            }
 
-        [data-testid="stSidebar"] [role="radiogroup"] label:hover {
-            background-color: #4b7bec !important;
-            transform: scale(1.05) !important;
-        }
+            [data-testid="stSidebar"] [role="radiogroup"] div[aria-checked="true"] label {
+                background-color: #1e3799 !important;
+                border: 2px solid white !important;
+            }
+            </style>
+            
+            <p class="nav-title">Navigation</p>
+        """, unsafe_allow_html=True)
 
-        [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
-            background-color: #1e3799 !important;
-            border: 2px solid white !important;
-        }
-        </style>
-
-        <p class="nav-title">Navigation</p>
-    """, unsafe_allow_html=True)
-
-    options_nav = ["🏠 Accueil", "👤 Profil Joueur", "💰 Estimation Valeur Réelle", "💎 Pépites", "🔮 Simulateur", "ℹ️ À propos"]
-    choix_page = st.radio("Navigation", options_nav, key="navigation", label_visibility="collapsed")
+        options_nav = ["🏠 Accueil", "👤 Profil Joueur", "💰 Estimation Valeur Réelle", "💎 Pépites", "🔮 Simulateur", "ℹ️ À propos"]
+        choix_page = st.radio("", options_nav, key="navigation")
 
 st.sidebar.info(f"Nombre de joueurs dans la base : {len(df)}")
 st.title(f"{choix_page}")
